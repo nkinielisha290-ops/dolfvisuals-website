@@ -18,6 +18,7 @@
   --color-cream: #f6f4ef;
   --color-mute: #777777;
   --color-line: #2c2c2c;
+  --color-on-gold: #111111;
 
   --font-display: "Bebas Neue", "Montserrat", sans-serif;
   --font-heading: "Montserrat", system-ui, sans-serif;
@@ -68,27 +69,27 @@ body {
 
 .btn-gold {
   display: inline-flex; align-items: center; gap: .6rem;
-  background: var(--color-gold); color: var(--color-ink);
+  background: var(--color-gold); color: var(--color-on-gold);
   font-family: var(--font-sub); font-weight: 600; font-size: .9rem; letter-spacing: .04em;
   padding: .95rem 1.6rem; transition: background .25s, transform .25s;
 }
 .btn-gold:hover { background: var(--color-gold-soft); transform: translateY(-1px); }
 .btn-ghost {
   display: inline-flex; align-items: center; gap: .6rem;
-  border: 1px solid rgba(255,255,255,.35); color: #fff;
+  border: 1px solid color-mix(in srgb, var(--color-white) 35%, transparent); color: var(--color-white);
   font-family: var(--font-sub); font-weight: 500; font-size: .9rem; letter-spacing: .04em;
   padding: .95rem 1.6rem; transition: border-color .25s, color .25s;
 }
 .btn-ghost:hover { border-color: var(--color-gold); color: var(--color-gold); }
 
 .field {
-  width: 100%; background: transparent; border: 0; border-bottom: 1px solid #3a3a3a;
-  padding: .85rem 0; color: #fff; font-size: 1rem; outline: none; transition: border-color .2s;
+  width: 100%; background: transparent; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--color-white) 22%, transparent);
+  padding: .85rem 0; color: var(--color-white); font-size: 1rem; outline: none; transition: border-color .2s;
 }
 .field:focus { border-color: var(--color-gold); }
-.field::placeholder { color: #6b6b6b; }
-select.field option { background: #111; }
-.label { font-family: var(--font-sub); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: #9a9a9a; }
+.field::placeholder { color: color-mix(in srgb, var(--color-white) 38%, transparent); }
+select.field option { background: var(--color-ink); color: var(--color-white); }
+.label { font-family: var(--font-sub); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: color-mix(in srgb, var(--color-white) 55%, transparent); }
 
 }
 
@@ -140,7 +141,7 @@ select.field option { background: #111; }
 .u-link { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s cubic-bezier(.2,.7,.2,1); }
 .u-link:hover { background-size: 100% 1px; }
 
-.text-outline { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.22); }
+.text-outline { color: transparent; -webkit-text-stroke: 1px color-mix(in srgb, var(--color-white) 22%, transparent); }
 
 
 
@@ -151,8 +152,8 @@ select.field option { background: #111; }
 .in .split-w > span, .split.in .split-w > span { transform: none; }
 
 /* scroll-lit statement */
-.hl-word { color: rgba(255,255,255,.14); transition: color .5s ease; }
-.hl-word.lit { color: #fff; }
+.hl-word { color: color-mix(in srgb, var(--color-white) 14%, transparent); transition: color .5s ease; }
+.hl-word.lit { color: var(--color-white); }
 .hl-word.hl-gold.lit { color: var(--color-gold); }
 
 /* custom cursor hides native pointer on fine devices */
@@ -168,7 +169,7 @@ select.field option { background: #111; }
 /* ghost button fill sweep + arrow nudge */
 .btn-ghost { position: relative; overflow: hidden; isolation: isolate; }
 .btn-ghost::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--color-gold); transform: scaleY(0); transform-origin: bottom; transition: transform .5s cubic-bezier(.77,0,.18,1); }
-.btn-ghost:hover { color: var(--color-ink) !important; border-color: var(--color-gold); }
+.btn-ghost:hover { color: var(--color-on-gold) !important; border-color: var(--color-gold); }
 .btn-ghost:hover::before { transform: scaleY(1); transform-origin: top; }
 .btn-gold svg, .btn-ghost svg { transition: transform .4s cubic-bezier(.16,1,.3,1); }
 .btn-gold:hover svg:last-child, .btn-ghost:hover svg:last-child { transform: translateX(4px); }
@@ -195,3 +196,34 @@ select.field option { background: #111; }
 @keyframes grain { 0%{transform:translate(0,0)} 20%{transform:translate(-3%,2%)} 40%{transform:translate(2%,-3%)} 60%{transform:translate(-2%,3%)} 80%{transform:translate(3%,1%)} 100%{transform:translate(0,0)} }
 
 @media (prefers-reduced-motion: reduce) { .grain::before { display: none; } }
+
+
+/* ================= Light / dark theme ================= */
+/* Site is dark by default. data-theme="light" on <html> remaps the brand tokens inside .site.
+   .theme-dark forces the dark palette back for areas over photos/video (heroes, lightbox, CTA). */
+.site { background: var(--color-ink); color: var(--color-white); min-height: 100vh; }
+html[data-theme="light"] body { background: #f7f5f0; }
+html[data-theme="light"] .site {
+  --color-ink: #f7f5f0; --color-ink-2: #efebe3; --color-ink-3: #e5e0d5; --color-line: #e0dacd;
+  --color-white: #141414; --color-cream: #141414; --color-mute: #6b6b6b;
+  --color-gold: #b8922a; --color-gold-soft: #cfa73f;
+}
+html[data-theme="light"] .site .theme-dark {
+  --color-ink: #111111; --color-ink-2: #1a1a1a; --color-ink-3: #232323; --color-line: #2c2c2c;
+  --color-white: #ffffff; --color-cream: #f6f4ef; --color-mute: #777777;
+  --color-gold: #d4af37; --color-gold-soft: #e6c968;
+  color: var(--color-white);
+}
+.show-light { display: none !important; }
+html[data-theme="light"] .site .show-light { display: revert !important; }
+html[data-theme="light"] .site .show-dark { display: none !important; }
+html[data-theme="light"] .site .theme-dark .show-light { display: none !important; }
+html[data-theme="light"] .site .theme-dark .show-dark { display: revert !important; }
+
+.map-frame { filter: grayscale(1) invert(.9) contrast(.9); }
+html[data-theme="light"] .map-frame { filter: grayscale(1) contrast(1.05); }
+
+/* smooth colour cross-fade while switching themes */
+html.theme-switching .site, html.theme-switching .site * {
+  transition: background-color .5s ease, color .5s ease, border-color .5s ease, fill .5s ease, stroke .5s ease !important;
+}

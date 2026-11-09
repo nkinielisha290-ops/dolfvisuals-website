@@ -40,7 +40,7 @@ export default async function Contact() {
         </div>
         <div className="reveal"><ContactForm t={t} whatsapp={s.whatsapp} /></div>
       </section>
-      <section className="h-80 w-full border-t border-line grayscale invert-[.9] contrast-[.9]">
+      <section className="h-80 w-full border-t border-line map-frame">
         <iframe title="Dar es Salaam" className="size-full" loading="lazy" src="https://www.google.com/maps?q=Dar%20es%20Salaam%2C%20Tanzania&z=12&output=embed" />
       </section>
     </>

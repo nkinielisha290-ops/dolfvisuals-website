@@ -6,7 +6,7 @@ import { reelFor } from "@/lib/reels";
 export default async function PageHero({ eyebrow, title, text, page }: { eyebrow: string; title: string; text?: string; page: string; image?: string | null }) {
   const reel = reelFor(page, await getSettings());
   return (
-    <section className="relative isolate flex min-h-[72svh] items-end overflow-hidden border-b border-line pb-20 pt-36 sm:min-h-[78svh] sm:pb-24">
+    <section className="theme-dark relative isolate flex min-h-[72svh] items-end overflow-hidden border-b border-line pb-20 pt-36 sm:min-h-[78svh] sm:pb-24">
       <BgVideo src={reel.src} srcMobile={reel.srcMobile} poster={reel.poster} className="-z-20 [&_video]:scale-105" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/70 to-ink/40" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/80 via-ink/30 to-transparent" />

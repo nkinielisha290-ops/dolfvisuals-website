@@ -53,7 +53,7 @@ export default function Cursor() {
       <div ref={dot} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[90] -ml-[3px] -mt-[3px] size-1.5 rounded-full bg-gold mix-blend-difference" />
       <div ref={ring} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[90]">
         <div className={`grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border transition-all duration-300 ease-out ${
-          label ? "size-24 border-gold bg-gold text-ink" : active ? "size-14 border-gold/80 bg-gold/10" : "size-9 border-white/40"}`}>
+          label ? "size-24 border-gold bg-gold text-on-gold" : active ? "size-14 border-gold/80 bg-gold/10" : "size-9 border-white/40"}`}>
           <span className={`font-sub text-[0.68rem] font-semibold uppercase tracking-[0.18em] transition-opacity ${label ? "opacity-100" : "opacity-0"}`}>{label}</span>
         </div>
       </div>

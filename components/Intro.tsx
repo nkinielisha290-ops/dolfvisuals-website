@@ -15,7 +15,7 @@ export default function Intro() {
   }, []);
   if (state === "gone") return null;
   return (
-    <div aria-hidden className="fixed inset-0 z-[100] grid place-items-center bg-ink"
+    <div aria-hidden className="theme-dark fixed inset-0 z-[100] grid place-items-center bg-ink"
       style={state === "leaving" ? { animation: "intro-out .9s cubic-bezier(.77,0,.18,1) forwards" } : undefined}>
       <div className="flex flex-col items-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}

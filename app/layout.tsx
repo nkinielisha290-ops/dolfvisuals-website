@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { getLang } from "@/lib/lang";
+import { getTheme } from "@/lib/theme";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL || "https://dolfvisuals.com";
 
@@ -26,12 +27,12 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { themeColor: "#111111" };
+export const viewport: Viewport = { themeColor: "#111111", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const lang = await getLang();
+  const [lang, theme] = await Promise.all([getLang(), getTheme()]);
   return (
-    <html lang={lang}>
+    <html lang={lang} data-theme={theme} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );

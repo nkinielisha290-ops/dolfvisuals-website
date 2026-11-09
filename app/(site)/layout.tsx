@@ -41,11 +41,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <>
+    <div className="site">
       <Intro />
       <SmoothScroll />
       <Cursor />
-      <Header lang={lang} nav={nav} bookLabel={t.nav_book} />
+      <Header lang={lang} nav={nav} bookLabel={t.nav_book} themeLabels={lang === "sw" ? { light: "Mandhari nyeupe", dark: "Mandhari nyeusi" } : { light: "Light mode", dark: "Dark mode" }} />
       <main className="grain">{children}</main>
       <div aria-hidden className="overflow-hidden border-t border-line py-10">
         <div className="flex w-max animate-[marquee_60s_linear_infinite] whitespace-nowrap font-display text-[clamp(4rem,12vw,10rem)] leading-none tracking-wide">
@@ -66,6 +66,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <BackToTop label={lang === "sw" ? "Rudi juu" : "Back to top"} />
       <Reveal />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </>
+    </div>
   );
 }

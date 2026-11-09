@@ -53,7 +53,7 @@ export default async function Home() {
   return (
     <>
       {/* ================= HERO ================= */}
-      <section className="relative isolate flex min-h-[100svh] items-end overflow-hidden lg:items-center">
+      <section className="theme-dark relative isolate flex min-h-[100svh] items-end overflow-hidden lg:items-center">
         <BgVideo src={reel.src} srcMobile={reel.srcMobile} poster={reel.poster ?? bg} className="-z-20 [&_video]:scale-105" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/50 to-ink/40" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/90 via-ink/40 to-transparent" />
@@ -120,7 +120,7 @@ export default async function Home() {
           <div className="reveal-img img-hover absolute -bottom-10 right-0 aspect-[4/5] w-1/2 overflow-hidden border-8 border-ink [transition-delay:.25s]">
             <Image src={img("commercial")} alt="" fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover" />
           </div>
-          <div className="reveal absolute -left-2 top-8 bg-gold px-4 py-3 text-ink sm:-left-4">
+          <div className="reveal absolute -left-2 top-8 bg-gold px-4 py-3 text-on-gold sm:-left-4">
             <p className="font-display text-4xl leading-none">2025</p>
             <p className="font-sub text-[0.6rem] uppercase tracking-[0.2em]">{t.founded}</p>
           </div>
@@ -158,7 +158,7 @@ export default async function Home() {
         }>
           {services.map((s, i) => (
             <Link key={s.id} href={`/services/${s.slug}`} data-cursor={sw ? "Fungua" : "Explore"}
-              className="card-shine img-hover img-mono group relative flex aspect-[3/4] w-[78vw] shrink-0 snap-start flex-col justify-between overflow-hidden border border-white/10 bg-ink p-7 sm:w-[44vw] lg:w-[min(28vw,420px)]">
+              className="theme-dark card-shine img-hover img-mono group relative flex aspect-[3/4] w-[78vw] shrink-0 snap-start flex-col justify-between overflow-hidden border border-white/10 bg-ink p-7 sm:w-[44vw] lg:w-[min(28vw,420px)]">
               {s.cover_url ? (
                 <Image src={s.cover_url} alt="" fill sizes="(min-width:1024px) 28vw, 78vw" className="object-cover opacity-45 group-hover:opacity-70" />
               ) : (
@@ -168,7 +168,7 @@ export default async function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
               <div className="relative flex items-start justify-between">
                 <span className="font-display text-5xl leading-none text-white/25 transition-colors duration-500 group-hover:text-gold">{String(i + 1).padStart(2, "0")}</span>
-                <span className="grid size-11 place-items-center rounded-full border border-white/20 transition-all duration-500 group-hover:rotate-45 group-hover:border-gold group-hover:bg-gold group-hover:text-ink">
+                <span className="grid size-11 place-items-center rounded-full border border-white/20 transition-all duration-500 group-hover:rotate-45 group-hover:border-gold group-hover:bg-gold group-hover:text-on-gold">
                   <ArrowUpRight className="size-5" />
                 </span>
               </div>
@@ -247,7 +247,7 @@ export default async function Home() {
       )}
 
       {/* ================= CTA ================= */}
-      <section className="relative isolate overflow-hidden">
+      <section className="theme-dark relative isolate overflow-hidden">
         <Image src={img("graduation")} alt="" fill sizes="100vw" className="parallax -z-20 object-cover object-[50%_40%] opacity-50" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/80 to-ink/30" />
         <div className="mx-auto max-w-7xl px-4 py-32 sm:px-8 md:py-44">

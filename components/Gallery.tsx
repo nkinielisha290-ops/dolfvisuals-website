@@ -60,7 +60,7 @@ export default function Gallery({ items, allLabel, closeLabel, filter = true, in
         <div className="-mx-4 mb-10 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0">
           {[{ slug: "all", label: allLabel }, ...cats].map((c) => (
             <button key={c.slug} type="button" onClick={() => setCat(c.slug)}
-              className={`shrink-0 border px-4 py-2 font-sub text-xs tracking-wider transition ${cat === c.slug ? "border-gold bg-gold text-ink" : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"}`}>
+              className={`shrink-0 border px-4 py-2 font-sub text-xs tracking-wider transition ${cat === c.slug ? "border-gold bg-gold text-on-gold" : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"}`}>
               {c.label}
             </button>
           ))}
@@ -81,7 +81,7 @@ export default function Gallery({ items, allLabel, closeLabel, filter = true, in
               <span className="mt-1 block font-sub text-sm text-white">{it.title}</span>
             </span>
             {it.videoUrl && (
-              <span className="absolute left-1/2 top-1/2 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold/90 text-ink">
+              <span className="absolute left-1/2 top-1/2 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold/90 text-on-gold">
                 <Play className="ml-0.5 size-6" fill="currentColor" />
               </span>
             )}
@@ -91,7 +91,7 @@ export default function Gallery({ items, allLabel, closeLabel, filter = true, in
 
       {current && (
         <div role="dialog" aria-modal="true" aria-label={current.title}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 animate-fadeup [animation-duration:.3s]"
+          className="theme-dark fixed inset-0 z-[60] flex items-center justify-center bg-black/95 animate-fadeup [animation-duration:.3s]"
           onClick={close}
           onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
           onTouchEnd={(e) => {

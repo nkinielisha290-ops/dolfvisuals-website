@@ -10,7 +10,9 @@ export default function Footer({ t, lang, settings, nav }: { t: Dict; lang: Lang
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-white.svg" alt="DOLF VISUALS" className="h-10 w-auto" />
+          <img src="/brand/logo-white.svg" alt="DOLF VISUALS" className="show-dark h-10 w-auto" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-black.svg" alt="" aria-hidden className="show-light h-10 w-auto" />
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-white/50">{t.footer_text}</p>
           <p className="mt-6 font-display text-2xl tracking-[0.12em] text-gold">{tr(settings, "tagline", lang)}</p>
           <SocialLinks settings={settings} className="mt-6" />
