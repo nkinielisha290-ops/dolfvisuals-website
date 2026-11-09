@@ -35,7 +35,7 @@ const bi = (name: string, label: string, type: FieldType = "text", required = fa
 
 export const RESOURCES: Record<string, Resource> = {
   portfolio: {
-    key: "portfolio", table: "portfolio_items", label: "Portfolio", singular: "portfolio item",
+    key: "portfolio", table: "dv_portfolio_items", label: "Portfolio", singular: "portfolio item",
     orderBy: "sort", titleField: "title_en", subtitleField: "category", imageField: "image_url",
     fields: [
       { name: "image_url", label: "Photo / video cover", type: "image", required: true },
@@ -44,14 +44,14 @@ export const RESOURCES: Record<string, Resource> = {
       { name: "video_url", label: "Video link (YouTube / Vimeo)", type: "url", help: "Only for videos. The photo above is used as the cover." },
       ...bi("title", "Title"),
       ...bi("description", "Description", "textarea"),
-      { name: "project_slug", label: "Part of project", type: "select", optionsFrom: { table: "projects", value: "slug", label: "title_en" }, half: true },
+      { name: "project_slug", label: "Part of project", type: "select", optionsFrom: { table: "dv_projects", value: "slug", label: "title_en" }, half: true },
       { name: "sort", label: "Order (lower shows first)", type: "number", half: true },
       { name: "featured", label: "Featured on home page", type: "checkbox", half: true },
       { name: "published", label: "Visible on website", type: "checkbox", half: true },
     ],
   },
   services: {
-    key: "services", table: "services", label: "Services", singular: "service",
+    key: "services", table: "dv_services", label: "Services", singular: "service",
     orderBy: "sort", titleField: "title_en", subtitleField: "summary_en", imageField: "cover_url",
     fields: [
       ...bi("title", "Title", "text", true),
@@ -65,12 +65,12 @@ export const RESOURCES: Record<string, Resource> = {
     ],
   },
   packages: {
-    key: "packages", table: "packages", label: "Packages & Prices", singular: "package",
+    key: "packages", table: "dv_packages", label: "Packages & Prices", singular: "package",
     orderBy: "sort", titleField: "name_en", subtitleField: "price",
     fields: [
       ...bi("name", "Package name", "text", true),
       { name: "price", label: "Price from (TSh)", type: "number", help: "Leave empty to show “On request”.", half: true },
-      { name: "service_slug", label: "Service (empty = general package)", type: "select", optionsFrom: { table: "services", value: "slug", label: "title_en" }, half: true },
+      { name: "service_slug", label: "Service (empty = general package)", type: "select", optionsFrom: { table: "dv_services", value: "slug", label: "title_en" }, half: true },
       ...bi("price_note", "Short note"),
       { name: "features_en", label: "What's included (English) — one per line", type: "list" },
       { name: "features_sw", label: "What's included (Kiswahili) — one per line", type: "list" },
@@ -80,7 +80,7 @@ export const RESOURCES: Record<string, Resource> = {
     ],
   },
   projects: {
-    key: "projects", table: "projects", label: "Projects", singular: "project",
+    key: "projects", table: "dv_projects", label: "Projects", singular: "project",
     orderBy: "sort", titleField: "title_en", subtitleField: "client", imageField: "cover_url",
     fields: [
       ...bi("title", "Title", "text", true),
@@ -94,19 +94,37 @@ export const RESOURCES: Record<string, Resource> = {
     ],
   },
   team: {
-    key: "team", table: "team_members", label: "Team", singular: "team member",
+    key: "team", table: "dv_team_members", label: "Team", singular: "team member",
     orderBy: "sort", titleField: "name", subtitleField: "role_en", imageField: "photo_url",
     fields: [
       { name: "name", label: "Full name", type: "text", required: true },
       ...bi("role", "Job title"),
       { name: "photo_url", label: "Photo", type: "image" },
+      ...bi("responsibilities", "Responsibilities (one per line)", "textarea"),
       ...bi("bio", "Short biography", "textarea"),
       { name: "sort", label: "Order", type: "number", half: true },
       { name: "published", label: "Visible on website", type: "checkbox", half: true },
     ],
   },
+  highlights: {
+    key: "highlights", table: "dv_highlights", label: "Clients, Partners & Awards", singular: "highlight",
+    orderBy: "sort", titleField: "title_en", subtitleField: "kind", imageField: "logo_url",
+    fields: [
+      { name: "kind", label: "Type", type: "select", required: true, half: true, options: [
+        { value: "client", label: "Corporate client" }, { value: "partner", label: "Partner / collaboration" },
+        { value: "award", label: "Award" }, { value: "certificate", label: "Certificate" }, { value: "press", label: "Press / media feature" },
+      ] },
+      { name: "year", label: "Year", type: "number", half: true },
+      ...bi("title", "Name / title", "text", true),
+      ...bi("description", "Short description", "textarea"),
+      { name: "logo_url", label: "Logo (clients & partners — only with permission)", type: "image" },
+      { name: "link", label: "Link (website or article)", type: "url" },
+      { name: "sort", label: "Order", type: "number", half: true },
+      { name: "published", label: "Visible on website", type: "checkbox", half: true },
+    ],
+  },
   testimonials: {
-    key: "testimonials", table: "testimonials", label: "Testimonials", singular: "testimonial",
+    key: "testimonials", table: "dv_testimonials", label: "Testimonials", singular: "testimonial",
     orderBy: "sort", titleField: "name", subtitleField: "organization", imageField: "photo_url",
     fields: [
       { name: "name", label: "Client name", type: "text", required: true, half: true },

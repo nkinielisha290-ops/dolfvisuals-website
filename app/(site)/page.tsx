@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import Highlights from "@/components/Highlights";
 import SectionHead from "@/components/SectionHead";
+import TestimonialSlider from "@/components/TestimonialSlider";
 import { SocialIcon } from "@/components/SocialIcons";
 import BgVideo from "@/components/motion/BgVideo";
 import Counter from "@/components/motion/Counter";
@@ -11,7 +13,7 @@ import ScrollHighlight from "@/components/motion/ScrollHighlight";
 import SplitText from "@/components/motion/SplitText";
 import { CATEGORIES, categoryLabel, getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
-import { getPortfolio, getServices, getSettings, getTestimonials, waLink } from "@/lib/data";
+import { getHighlights, getPortfolio, getServices, getSettings, getTestimonials, waLink } from "@/lib/data";
 import { reelFor } from "@/lib/reels";
 
 export const revalidate = 60;
@@ -31,8 +33,8 @@ export default async function Home() {
   const lang = await getLang();
   const t = getDict(lang);
   const sw = lang === "sw";
-  const [settings, services, portfolio, testimonials] = await Promise.all([
-    getSettings(), getServices(), getPortfolio(), getTestimonials(),
+  const [settings, services, portfolio, testimonials, highlights] = await Promise.all([
+    getSettings(), getServices(), getPortfolio(), getTestimonials(), getHighlights(),
   ]);
 
   const featured = portfolio.filter((p) => p.featured);
@@ -230,21 +232,14 @@ export default async function Home() {
       {/* ================= TESTIMONIALS (only real, approved) ================= */}
       {testimonials.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-24 sm:px-8 md:py-32">
-          <SectionHead eyebrow={t.testi_eyebrow} title={t.testi_title} />
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {testimonials.slice(0, 3).map((x, i) => (
-              <figure key={x.id} className="reveal card-shine border border-line p-8" style={{ transitionDelay: `${i * 100}ms` }}>
-                <span className="font-display text-6xl leading-none text-gold">“</span>
-                <blockquote className="mt-2 leading-relaxed text-white/75">{tr(x, "quote", lang)}</blockquote>
-                <figcaption className="mt-6 font-sub text-sm">
-                  <span className="text-white">{x.name}</span>
-                  {x.organization && <span className="block text-white/40">{x.organization}</span>}
-                </figcaption>
-              </figure>
-            ))}
+          <p className="eyebrow eyebrow-line">{t.testi_eyebrow}</p>
+          <div className="reveal mt-10">
+            <TestimonialSlider slides={testimonials.map((x) => ({ id: x.id, quote: tr(x, "quote", lang), name: x.name, organization: x.organization, photo: x.photo_url, rating: x.rating }))} />
           </div>
         </section>
       )}
+
+      <Highlights items={highlights} lang={lang} />
 
       {/* ================= CTA ================= */}
       <section className="theme-dark relative isolate overflow-hidden">

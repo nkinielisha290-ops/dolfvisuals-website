@@ -3,19 +3,23 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  CalendarCheck, Camera, Cog, FolderKanban, LayoutDashboard, Menu, MessageSquare, Quote, Tags, Users, Wrench, X, ExternalLink,
+  Award, CalendarCheck, Camera, Cog, ContactRound, FileText, FolderKanban, LayoutDashboard, Menu, MessageSquare, Quote, Tags, Users, Wallet, Wrench, X, ExternalLink,
 } from "lucide-react";
 
 const items = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck, badge: "bookings" },
   { href: "/admin/inquiries", label: "Messages", icon: MessageSquare, badge: "inquiries" },
+  { href: "/admin/clients", label: "Clients", icon: ContactRound },
+  { href: "/admin/invoices", label: "Invoices", icon: FileText },
+  { href: "/admin/payments", label: "Payments", icon: Wallet },
   { href: "/admin/portfolio", label: "Portfolio", icon: Camera },
   { href: "/admin/services", label: "Services", icon: Wrench },
   { href: "/admin/packages", label: "Packages & Prices", icon: Tags },
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { href: "/admin/team", label: "Team", icon: Users },
+  { href: "/admin/highlights", label: "Clients & Awards", icon: Award },
   { href: "/admin/settings", label: "Settings", icon: Cog },
 ] as const;
 

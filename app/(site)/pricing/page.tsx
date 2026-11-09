@@ -29,7 +29,7 @@ export default async function Pricing() {
       <ul className="mt-8 flex-1 space-y-3 text-sm text-white/75">
         {trList(p, "features", lang).map((f) => <li key={f} className="flex gap-3"><Check className="size-4 shrink-0 text-gold" />{f}</li>)}
       </ul>
-      <Link href={`/booking${p.service_slug ? `?service=${p.service_slug}` : ""}`} className={`mt-10 justify-center ${p.featured ? "btn-gold" : "btn-ghost"}`}>
+      <Link href={`/booking?type=quote${p.service_slug ? `&service=${p.service_slug}` : ""}`} className={`mt-10 justify-center ${p.featured ? "btn-gold" : "btn-ghost"}`}>
         {t.request_quote} <ArrowRight className="size-4" />
       </Link>
     </div>

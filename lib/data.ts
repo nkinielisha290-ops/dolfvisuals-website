@@ -8,7 +8,7 @@ import { supabasePublic } from "./supabase/server";
 import {
   seedPackages, seedPortfolio, seedProjects, seedServices, seedSettings, seedTeam, seedTestimonials,
 } from "./seed";
-import type { Package, PortfolioItem, Project, Service, Settings, TeamMember, Testimonial } from "./types";
+import type { Highlight, Package, PortfolioItem, Project, Service, Settings, TeamMember, Testimonial } from "./types";
 
 async function fromTable<T>(table: string, fallback: T[], filter: Record<string, unknown>, order = "sort"): Promise<T[]> {
   if (!hasSupabase) return fallback;
@@ -27,7 +27,7 @@ async function fromTable<T>(table: string, fallback: T[], filter: Record<string,
 export const getSettings = cache(async (): Promise<Settings> => {
   if (!hasSupabase) return seedSettings;
   try {
-    const { data, error } = await supabasePublic().from("settings").select("*").eq("id", 1).maybeSingle();
+    const { data, error } = await supabasePublic().from("dv_settings").select("*").eq("id", 1).maybeSingle();
     if (error) throw error;
     return { ...seedSettings, ...(data ?? {}) } as Settings;
   } catch (e) {
@@ -36,12 +36,13 @@ export const getSettings = cache(async (): Promise<Settings> => {
   }
 });
 
-export const getServices = cache(() => fromTable<Service>("services", seedServices, { published: true }));
-export const getPackages = cache(() => fromTable<Package>("packages", seedPackages, { published: true }));
-export const getPortfolio = cache(() => fromTable<PortfolioItem>("portfolio_items", seedPortfolio, { published: true }));
-export const getProjects = cache(() => fromTable<Project>("projects", seedProjects, { published: true }));
-export const getTeam = cache(() => fromTable<TeamMember>("team_members", seedTeam, { published: true }));
-export const getTestimonials = cache(() => fromTable<Testimonial>("testimonials", seedTestimonials, { approved: true }));
+export const getServices = cache(() => fromTable<Service>("dv_services", seedServices, { published: true }));
+export const getPackages = cache(() => fromTable<Package>("dv_packages", seedPackages, { published: true }));
+export const getPortfolio = cache(() => fromTable<PortfolioItem>("dv_portfolio_items", seedPortfolio, { published: true }));
+export const getProjects = cache(() => fromTable<Project>("dv_projects", seedProjects, { published: true }));
+export const getTeam = cache(() => fromTable<TeamMember>("dv_team_members", seedTeam, { published: true }));
+export const getHighlights = cache(() => fromTable<Highlight>("dv_highlights", [], { published: true }));
+export const getTestimonials = cache(() => fromTable<Testimonial>("dv_testimonials", seedTestimonials, { approved: true }));
 
 export async function getService(slug: string) {
   return (await getServices()).find((s) => s.slug === slug) ?? null;

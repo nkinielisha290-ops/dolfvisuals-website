@@ -8,8 +8,8 @@ import { getServices, getSettings, waLink } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Book a Session", description: "Book DOLF VISUALS for your wedding, graduation, event or brand shoot." };
 
-export default async function Booking({ searchParams }: { searchParams: Promise<{ service?: string }> }) {
-  const { service } = await searchParams;
+export default async function Booking({ searchParams }: { searchParams: Promise<{ service?: string; type?: string }> }) {
+  const { service, type } = await searchParams;
   const lang = await getLang();
   const t = getDict(lang);
   const [services, s] = await Promise.all([getServices(), getSettings()]);
@@ -18,7 +18,7 @@ export default async function Booking({ searchParams }: { searchParams: Promise<
       <PageHero page="booking" eyebrow={t.book_eyebrow} title={t.book_title} text={t.book_text} />
       <section className="mx-auto grid max-w-7xl gap-16 px-4 py-20 sm:px-8 md:py-28 lg:grid-cols-[1.6fr_1fr]">
         <div className="reveal">
-          <BookingForm t={t} whatsapp={s.whatsapp} defaultService={service}
+          <BookingForm t={t} whatsapp={s.whatsapp} defaultService={service} defaultKind={type === "quote" ? "quote" : "booking"}
             services={services.map((x) => ({ slug: x.slug, title: tr(x, "title", lang) }))} />
         </div>
         <aside className="reveal h-fit border border-line p-8 lg:sticky lg:top-28">

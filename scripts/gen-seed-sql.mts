@@ -17,14 +17,14 @@ const insert = (table: string, rows: Record<string, unknown>[], skip: string[] =
 
 const { id: _id, ...settings } = S.seedSettings;
 const sql = `-- DOLF VISUALS starting content (generated from lib/seed.ts). Run after schema.sql.
-insert into public.settings (id,${Object.keys(settings).join(",")}) values (1,${Object.values(settings).map(q).join(",")})
+insert into public.dv_settings (id,${Object.keys(settings).join(",")}) values (1,${Object.values(settings).map(q).join(",")})
 on conflict (id) do nothing;
 
-${insert("services", S.seedServices as never)}
+${insert("dv_services", S.seedServices as never)}
 
-${insert("packages", S.seedPackages as never)}
+${insert("dv_packages", S.seedPackages as never)}
 
-${insert("portfolio_items", S.seedPortfolio as never)}
+${insert("dv_portfolio_items", S.seedPortfolio as never)}
 `;
 writeFileSync(new URL("../supabase/seed.sql", import.meta.url), sql);
 console.log("wrote supabase/seed.sql");

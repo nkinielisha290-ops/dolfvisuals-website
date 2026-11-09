@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Star } from "lucide-react";
 import PageHero from "@/components/PageHero";
+import TestimonialSlider from "@/components/TestimonialSlider";
 import { getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getTestimonials } from "@/lib/data";
@@ -26,6 +27,9 @@ export default async function Testimonials() {
           <p className="border border-dashed border-line p-12 text-center text-white/45">{t.testi_empty}</p>
         ) : (
           <>
+            <div className="reveal mb-20 border-b border-line pb-16">
+              <TestimonialSlider slides={items.map((x) => ({ id: x.id, quote: tr(x, "quote", lang), name: x.name, organization: x.organization, photo: x.photo_url, rating: x.rating }))} />
+            </div>
             {videos.length > 0 && (
               <div className="mb-16 grid gap-6 md:grid-cols-2">
                 {videos.map((v) => (

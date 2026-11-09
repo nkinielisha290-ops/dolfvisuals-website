@@ -90,6 +90,8 @@ export type TeamMember = {
   name: string;
   role_en: string;
   role_sw: string;
+  responsibilities_en: string | null;
+  responsibilities_sw: string | null;
   bio_en: string | null;
   bio_sw: string | null;
   photo_url: string | null;
@@ -110,9 +112,29 @@ export type Testimonial = {
   sort: number;
 };
 
+export type Highlight = {
+  id: string;
+  kind: "partner" | "client" | "award" | "certificate" | "press";
+  title_en: string;
+  title_sw: string;
+  description_en: string | null;
+  description_sw: string | null;
+  logo_url: string | null;
+  link: string | null;
+  year: number | null;
+  sort: number;
+  published: boolean;
+};
+
 export type Booking = {
   id: string;
   created_at: string;
+  client_id: string | null;
+  reference: string | null;
+  request_type: "booking" | "quote";
+  stage: "not_started" | "pre_production" | "shooting" | "editing" | "review" | "delivered";
+  quoted_amount: number | null;
+  deliverables_url: string | null;
   name: string;
   phone: string;
   email: string | null;
@@ -135,4 +157,57 @@ export type Inquiry = {
   subject: string | null;
   message: string;
   status: "new" | "read" | "replied";
+};
+
+export type Client = {
+  id: string;
+  created_at: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  organization: string | null;
+  address: string | null;
+  source: "website" | "whatsapp" | "instagram" | "referral" | "walk-in" | "other";
+  notes: string | null;
+};
+
+export type InvoiceItem = { description: string; qty: number; price: number };
+
+export type Invoice = {
+  id: string;
+  created_at: string;
+  number: string;
+  client_id: string | null;
+  booking_id: string | null;
+  issue_date: string;
+  due_date: string | null;
+  items: InvoiceItem[];
+  discount: number;
+  tax_rate: number;
+  total: number;
+  status: "draft" | "sent" | "partially_paid" | "paid" | "cancelled";
+  notes: string | null;
+};
+
+export type Payment = {
+  id: string;
+  created_at: string;
+  client_id: string | null;
+  booking_id: string | null;
+  invoice_id: string | null;
+  amount: number;
+  method: "mpesa" | "tigopesa" | "airtelmoney" | "halopesa" | "bank" | "cash" | "card" | "other";
+  reference: string | null;
+  paid_on: string;
+  notes: string | null;
+};
+
+export type Communication = {
+  id: string;
+  at: string;
+  client_id: string | null;
+  booking_id: string | null;
+  channel: "whatsapp" | "call" | "email" | "meeting" | "sms" | "instagram" | "other";
+  direction: "in" | "out";
+  summary: string;
 };

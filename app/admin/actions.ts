@@ -9,7 +9,7 @@ async function admin() {
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/admin/login");
-  const { data: ok } = await sb.rpc("is_admin");
+  const { data: ok } = await sb.rpc("dv_is_admin");
   if (!ok) throw new Error("Not authorised");
   return sb;
 }
@@ -59,7 +59,7 @@ export async function saveRecord(resourceKey: string, id: string, _: string | nu
     const sb = await admin();
     const { r, row } = parse(resourceKey, fd);
     // keep NOT NULL text columns safe
-    for (const [k, v] of Object.entries(row)) if (v === null && /_(sw|en)$/.test(k) && !/^(description|bio|price_note|quote_sw)/.test(k)) row[k] = "";
+    for (const [k, v] of Object.entries(row)) if (v === null && /_(sw|en)$/.test(k) && !/^(description|bio|price_note|quote_sw|responsibilities)/.test(k)) row[k] = "";
     const q = id === "new" ? sb.from(r.table).insert(row) : sb.from(r.table).update(row).eq("id", id);
     const { error } = await q;
     if (error) return error.message;
@@ -89,10 +89,10 @@ export async function togglePublished(resourceKey: string, id: string, field: st
 
 export async function addPortfolioItems(items: { image_url: string; width: number; height: number; category: string; title_en: string }[]) {
   const sb = await admin();
-  const { data: last } = await sb.from("portfolio_items").select("sort").order("sort", { ascending: false }).limit(1).maybeSingle();
+  const { data: last } = await sb.from("dv_portfolio_items").select("sort").order("sort", { ascending: false }).limit(1).maybeSingle();
   let sort = (last?.sort ?? 0) + 1;
   const rows = items.map((i) => ({ ...i, title_sw: "", media_type: "image", sort: sort++, published: true }));
-  const { error } = await sb.from("portfolio_items").insert(rows);
+  const { error } = await sb.from("dv_portfolio_items").insert(rows);
   if (error) return error.message;
   refresh();
   revalidatePath("/admin/portfolio");
@@ -103,26 +103,26 @@ export async function updateBooking(id: string, fd: FormData) {
   const sb = await admin();
   const status = String(fd.get("status"));
   if (!(BOOKING_STATUSES as readonly string[]).includes(status)) return;
-  await sb.from("bookings").update({ status, admin_notes: String(fd.get("admin_notes") ?? "") || null }).eq("id", id);
+  await sb.from("dv_bookings").update({ status, admin_notes: String(fd.get("admin_notes") ?? "") || null }).eq("id", id);
   revalidatePath("/admin", "layout");
 }
 
 export async function deleteBooking(id: string) {
   const sb = await admin();
-  await sb.from("bookings").delete().eq("id", id);
+  await sb.from("dv_bookings").delete().eq("id", id);
   revalidatePath("/admin", "layout");
 }
 
 export async function updateInquiry(id: string, status: string) {
   const sb = await admin();
   if (!(INQUIRY_STATUSES as readonly string[]).includes(status)) return;
-  await sb.from("inquiries").update({ status }).eq("id", id);
+  await sb.from("dv_inquiries").update({ status }).eq("id", id);
   revalidatePath("/admin", "layout");
 }
 
 export async function deleteInquiry(id: string) {
   const sb = await admin();
-  await sb.from("inquiries").delete().eq("id", id);
+  await sb.from("dv_inquiries").delete().eq("id", id);
   revalidatePath("/admin", "layout");
 }
 
@@ -140,7 +140,7 @@ export async function saveSettings(_: string | null, fd: FormData): Promise<stri
     row[k] = v || (["instagram", "facebook", "tiktok", "youtube", "linkedin", "hero_video_url", "hero_video_mobile_url"].includes(k) ? null : "");
   }
   if (row.whatsapp) row.whatsapp = row.whatsapp.replace(/[^\d]/g, "");
-  const { error } = await sb.from("settings").upsert({ id: 1, ...row, updated_at: new Date().toISOString() });
+  const { error } = await sb.from("dv_settings").upsert({ id: 1, ...row, updated_at: new Date().toISOString() });
   if (error) return error.message;
   refresh();
   return "saved";

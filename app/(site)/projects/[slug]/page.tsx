@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Gallery from "@/components/Gallery";
 import PageHero from "@/components/PageHero";
+import Share from "@/components/Share";
 import { getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getPortfolio, getProject } from "@/lib/data";
@@ -30,6 +31,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <Gallery items={toGallery(items, lang)} allLabel={t.all} closeLabel={t.gallery_close} filter={false} />
         </section>
       )}
+      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-8">
+        <Share title={`${tr(p, "title", lang)} — DOLF VISUALS`} labels={{ share: t.share, copy: t.copy_link, copied: t.copied }} />
+      </div>
     </>
   );
 }

@@ -6,7 +6,7 @@ import type { Settings } from "@/lib/types";
 
 export default async function SettingsPage() {
   const sb = await supabaseServer();
-  const { data } = await sb.from("settings").select("*").eq("id", 1).maybeSingle();
+  const { data } = await sb.from("dv_settings").select("*").eq("id", 1).maybeSingle();
   return (
     <>
       <PageTitle title="Settings" text="Headline, contact details and social links shown across the website." />

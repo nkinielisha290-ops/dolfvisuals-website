@@ -21,7 +21,7 @@ Bila Supabase, website inafanya kazi kwa demo content iliyomo (`lib/seed.ts`). B
 3. Nakili `.env.example` kuwa `.env.local`, kisha jaza `NEXT_PUBLIC_SUPABASE_URL` na `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Project Settings → API).
 4. **Authentication → Users → Add user**: weka email na password ya admin. Kisha kwenye SQL Editor:
    ```sql
-   insert into admin_users (email) values ('dolfvisuals@gmail.com');
+   insert into dv_admin_users (email) values ('dolfvisuals@gmail.com');
    ```
 5. Restart `npm run dev`, kisha ingia kwenye **/admin/login**.
 
@@ -56,6 +56,18 @@ Kwenye Vercel, weka env variables zilezile kwenye Project Settings → Environme
 - **Settings:** headline ya home, tagline, simu, WhatsApp, email, na social links.
 
 Ulinzi: Row Level Security. Wageni wanaweza kusoma content na kutuma booking tu. Admin peke yake ndiye anaweza kubadilisha content na kusoma bookings.
+
+## Business management (CRM) — `/admin`
+
+- **Clients:** usajili wa wateja. Bookings za website zinaunda mteja automatically, na zinaunganishwa kwa namba ya simu, kwa hiyo hakuna duplicates.
+- **Bookings / Projects:** booking au quotation yenye namba ya kumbukumbu (DV-YYMMDD-XXXX), status, hatua za kazi (pre-production → shooting → editing → review → delivered), bei iliyokubaliwa, na link ya kukabidhi kazi.
+- **Invoices:** namba zinajitengeneza (DV-2026-0001), items, discount, VAT, na ukurasa wa kuchapisha / Save as PDF. Unaweza kutuma kwa WhatsApp.
+- **Payments:** M-Pesa, Mixx by Yas (Tigo Pesa), Airtel Money, HaloPesa, Bank, Cash. Status ya invoice inajibadilisha yenyewe (partially paid / paid).
+- **Communication log:** kumbukumbu za WhatsApp, simu, email na mikutano kwa kila mteja.
+- **Dashboard:** mapato ya mwezi, madeni (outstanding & overdue), miradi inayoendelea, matukio yajayo, malipo ya karibuni.
+- **Clients & Awards:** wateja wakubwa, washirika, tuzo, vyeti na press. Zinaonekana kwenye Home na About zikiwekwa tu.
+
+Tables zote zina kiambishi `dv_`, kwa hiyo database hii inaweza kukaa kwenye Supabase project moja na mifumo mingine.
 
 ## Brand
 

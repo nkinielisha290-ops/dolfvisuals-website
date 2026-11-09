@@ -12,7 +12,7 @@ export default async function Panel({ children }: { children: React.ReactNode })
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/admin/login");
-  const { data: isAdmin } = await sb.rpc("is_admin");
+  const { data: isAdmin } = await sb.rpc("dv_is_admin");
   if (!isAdmin) {
     return (
       <div className="mx-auto max-w-md px-6 py-24 text-center">
@@ -23,8 +23,8 @@ export default async function Panel({ children }: { children: React.ReactNode })
     );
   }
   const [b, i] = await Promise.all([
-    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "new"),
-    sb.from("inquiries").select("id", { count: "exact", head: true }).eq("status", "new"),
+    sb.from("dv_bookings").select("id", { count: "exact", head: true }).eq("status", "new"),
+    sb.from("dv_inquiries").select("id", { count: "exact", head: true }).eq("status", "new"),
   ]);
   return (
     <div className="lg:flex">

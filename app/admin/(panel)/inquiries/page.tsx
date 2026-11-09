@@ -7,7 +7,7 @@ import { deleteInquiry, updateInquiry } from "../../actions";
 
 export default async function Inquiries() {
   const sb = await supabaseServer();
-  const { data } = await sb.from("inquiries").select("*").order("created_at", { ascending: false }).limit(200);
+  const { data } = await sb.from("dv_inquiries").select("*").order("created_at", { ascending: false }).limit(200);
   const rows = (data ?? []) as Inquiry[];
   return (
     <>

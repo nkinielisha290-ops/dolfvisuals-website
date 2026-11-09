@@ -1,10 +1,11 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
+import Highlights from "@/components/Highlights";
 import SectionHead from "@/components/SectionHead";
 import { getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
-import { getPortfolio, getTeam } from "@/lib/data";
+import { getHighlights, getPortfolio, getTeam } from "@/lib/data";
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: "About Us", description: "The story, mission, vision and team behind DOLF VISUALS." };
@@ -31,7 +32,7 @@ const VALUES = {
 export default async function About() {
   const lang = await getLang();
   const t = getDict(lang);
-  const [team, portfolio] = await Promise.all([getTeam(), getPortfolio()]);
+  const [team, portfolio, highlights] = await Promise.all([getTeam(), getPortfolio(), getHighlights()]);
   const sw = lang === "sw";
 
   return (
@@ -101,11 +102,20 @@ export default async function About() {
                 <h3 className="mt-5 font-heading text-lg font-bold">{m.name}</h3>
                 <p className="font-sub text-sm text-gold">{tr(m, "role", lang)}</p>
                 {tr(m, "bio", lang) && <p className="mt-3 text-sm leading-relaxed text-white/55">{tr(m, "bio", lang)}</p>}
+                {tr(m, "responsibilities", lang) && (
+                  <div className="mt-4 border-t border-line pt-3">
+                    <p className="label">{t.responsibilities}</p>
+                    <ul className="mt-2 space-y-1 text-sm text-white/65">
+                      {tr(m, "responsibilities", lang).split("\n").filter(Boolean).map((r) => <li key={r} className="flex gap-2"><span className="text-gold">—</span>{r}</li>)}
+                    </ul>
+                  </div>
+                )}
               </article>
             ))}
           </div>
         )}
       </section>
+      <Highlights items={highlights} lang={lang} />
     </>
   );
 }

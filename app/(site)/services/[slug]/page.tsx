@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { ArrowRight, Check } from "lucide-react";
 import Gallery from "@/components/Gallery";
 import PageHero from "@/components/PageHero";
+import Share from "@/components/Share";
 import { getDict, tr, trList } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { formatTZS, getPackages, getPortfolio, getService } from "@/lib/data";
@@ -32,7 +33,13 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-8 md:grid-cols-[1.4fr_1fr] md:py-28">
         <p className="reveal text-xl leading-relaxed text-white/75 sm:text-2xl">{tr(s, "description", lang)}</p>
         <div className="reveal md:justify-self-end">
-          <Link href={`/booking?service=${s.slug}`} className="btn-gold">{t.service_book} <ArrowRight className="size-4" /></Link>
+          <div className="flex flex-col items-start gap-6">
+            <div className="flex flex-wrap gap-3">
+              <Link href={`/booking?service=${s.slug}`} className="btn-gold">{t.service_book} <ArrowRight className="size-4" /></Link>
+              <Link href={`/booking?type=quote&service=${s.slug}`} className="btn-ghost">{t.request_quote}</Link>
+            </div>
+            <Share title={`${tr(s, "title", lang)} — DOLF VISUALS`} labels={{ share: t.share, copy: t.copy_link, copied: t.copied }} />
+          </div>
         </div>
       </section>
 
