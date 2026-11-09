@@ -3,6 +3,30 @@ import { useActionState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { saveSettings } from "@/app/admin/actions";
 import type { Settings } from "@/lib/types";
+import { useState } from "react";
+import { UploadCloud } from "lucide-react";
+import { uploadMedia } from "@/lib/supabase/browser";
+
+function VideoUrl({ name, defaultValue }: { name: string; defaultValue: string }) {
+  const [url, setUrl] = useState(defaultValue);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <div className="mt-1 space-y-2">
+      <input name={name} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…mp4" className="a-input" />
+      <label className={`a-btn-ghost cursor-pointer ${busy ? "pointer-events-none opacity-60" : ""}`}>
+        {busy ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />} {busy ? "Uploading…" : "Upload MP4"}
+        <input type="file" accept="video/mp4,video/webm" className="hidden" onChange={async (e) => {
+          const f = e.target.files?.[0]; if (!f) return;
+          setBusy(true); setErr(null);
+          try { setUrl(await uploadMedia(f, "showreel")); } catch (x) { setErr((x as Error).message); } finally { setBusy(false); }
+        }} />
+      </label>
+      {err && <p className="text-xs text-red-600">{err}</p>}
+      <p className="text-xs text-ink/50">Tip: 10–30 seconds, no audio, under ~8 MB loads fastest.</p>
+    </div>
+  );
+}
 
 const groups: { title: string; fields: [keyof Settings, string, ("textarea" | "text")?][] }[] = [
   { title: "Home page", fields: [
@@ -13,6 +37,10 @@ const groups: { title: string; fields: [keyof Settings, string, ("textarea" | "t
   { title: "Contact details", fields: [
     ["phone", "Phone number"], ["whatsapp", "WhatsApp number (with country code, e.g. 255756506908)"],
     ["email", "Email"], ["location_en", "Location (English)"], ["location_sw", "Location (Kiswahili)"],
+  ] },
+  { title: "Background video (showreel)", fields: [
+    ["hero_video_url", "Showreel video URL — desktop (MP4, landscape). Leave empty to use the built-in reels"],
+    ["hero_video_mobile_url", "Showreel video URL — phones (MP4, portrait, optional)"],
   ] },
   { title: "Social media links", fields: [
     ["instagram", "Instagram URL"], ["facebook", "Facebook URL"], ["tiktok", "TikTok URL"], ["youtube", "YouTube URL"], ["linkedin", "LinkedIn URL"],
@@ -31,6 +59,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
               <span className="text-sm font-medium">{label}</span>
               {type === "textarea"
                 ? <textarea name={name} defaultValue={String(settings[name] ?? "")} rows={3} className="a-input mt-1" />
+                : name.startsWith("hero_video") ? <VideoUrl name={name} defaultValue={String(settings[name] ?? "")} />
                 : <input name={name} defaultValue={String(settings[name] ?? "")} className="a-input mt-1" />}
             </label>
           ))}

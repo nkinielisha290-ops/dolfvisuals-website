@@ -37,7 +37,7 @@ export default async function Pricing() {
 
   return (
     <>
-      <PageHero eyebrow={t.pricing_eyebrow} title={t.pricing_title} text={t.pricing_text} />
+      <PageHero page="pricing" eyebrow={t.pricing_eyebrow} title={t.pricing_title} text={t.pricing_text} />
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-8 md:py-28">
         {general.length > 0 && <div className="grid gap-6 md:grid-cols-3">{general.map((p) => <Card key={p.id} p={p} />)}</div>}
         {byService.map(({ s, pkgs }) => (

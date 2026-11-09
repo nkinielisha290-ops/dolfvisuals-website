@@ -19,6 +19,8 @@ export type Settings = {
   youtube: string | null;
   linkedin: string | null;
   founded: string;
+  hero_video_url: string | null;
+  hero_video_mobile_url: string | null;
 };
 
 export type Service = {

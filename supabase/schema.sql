@@ -36,8 +36,14 @@ create table if not exists public.settings (
   location_sw text not null default '',
   instagram text, facebook text, tiktok text, youtube text, linkedin text,
   founded date,
+  hero_video_url text,
+  hero_video_mobile_url text,
   updated_at timestamptz not null default now()
 );
+
+-- for databases created before background video support
+alter table public.settings add column if not exists hero_video_url text;
+alter table public.settings add column if not exists hero_video_mobile_url text;
 
 -- ---------- Services ----------
 create table if not exists public.services (

@@ -16,7 +16,7 @@ export default async function Services() {
   const services = await getServices();
   return (
     <>
-      <PageHero eyebrow={t.services_eyebrow} title={t.services_title} image={services[0]?.cover_url} />
+      <PageHero page="services" eyebrow={t.services_eyebrow} title={t.services_title} image={services[0]?.cover_url} />
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-8 md:py-28">
         <div className="divide-y divide-line border-y border-line">
           {services.map((s, i) => (

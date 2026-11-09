@@ -15,7 +15,7 @@ export default async function Booking({ searchParams }: { searchParams: Promise<
   const [services, s] = await Promise.all([getServices(), getSettings()]);
   return (
     <>
-      <PageHero eyebrow={t.book_eyebrow} title={t.book_title} text={t.book_text} />
+      <PageHero page="booking" eyebrow={t.book_eyebrow} title={t.book_title} text={t.book_text} />
       <section className="mx-auto grid max-w-7xl gap-16 px-4 py-20 sm:px-8 md:py-28 lg:grid-cols-[1.6fr_1fr]">
         <div className="reveal">
           <BookingForm t={t} whatsapp={s.whatsapp} defaultService={service}

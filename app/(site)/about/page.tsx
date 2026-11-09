@@ -36,7 +36,7 @@ export default async function About() {
 
   return (
     <>
-      <PageHero eyebrow={t.about_eyebrow} title={sw ? "Hadithi ya DOLF VISUALS" : "The DOLF VISUALS story"}
+      <PageHero page="about" eyebrow={t.about_eyebrow} title={sw ? "Hadithi ya DOLF VISUALS" : "The DOLF VISUALS story"}
         text={sw ? "Brand ya upigaji picha, video na ubunifu wa kuona — iliyojitolea kunasa matukio yenye maana na kusimulia hadithi zenye nguvu."
                  : "A photography, videography and creative media brand dedicated to capturing meaningful moments and telling compelling visual stories."}
         image={portfolio[2]?.image_url} />

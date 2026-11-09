@@ -20,7 +20,7 @@ export default async function Testimonials() {
   const videos = items.filter((x) => x.video_url && embed(x.video_url));
   return (
     <>
-      <PageHero eyebrow={t.testi_eyebrow} title={t.testi_title} />
+      <PageHero page="testimonials" eyebrow={t.testi_eyebrow} title={t.testi_title} />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-8 md:py-24">
         {items.length === 0 ? (
           <p className="border border-dashed border-line p-12 text-center text-white/45">{t.testi_empty}</p>

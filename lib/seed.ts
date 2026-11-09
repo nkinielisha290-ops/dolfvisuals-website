@@ -25,6 +25,8 @@ export const seedSettings: Settings = {
   youtube: null,
   linkedin: null,
   founded: "2025-10-11",
+  hero_video_url: null,
+  hero_video_mobile_url: null,
 };
 
 const s = (

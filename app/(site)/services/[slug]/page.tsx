@@ -28,7 +28,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
-      <PageHero eyebrow={t.nav_services} title={tr(s, "title", lang)} text={tr(s, "summary", lang)} image={s.cover_url} />
+      <PageHero page="services" eyebrow={t.nav_services} title={tr(s, "title", lang)} text={tr(s, "summary", lang)} image={s.cover_url} />
       <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-8 md:grid-cols-[1.4fr_1fr] md:py-28">
         <p className="reveal text-xl leading-relaxed text-white/75 sm:text-2xl">{tr(s, "description", lang)}</p>
         <div className="reveal md:justify-self-end">

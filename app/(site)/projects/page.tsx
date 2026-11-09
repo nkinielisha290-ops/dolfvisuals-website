@@ -15,7 +15,7 @@ export default async function Projects() {
   const projects = await getProjects();
   return (
     <>
-      <PageHero eyebrow={t.projects_eyebrow} title={t.projects_title} />
+      <PageHero page="projects" eyebrow={t.projects_eyebrow} title={t.projects_title} />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-8 md:py-24">
         {projects.length === 0 ? (
           <p className="border border-dashed border-line p-12 text-center text-white/45">{t.projects_empty}</p>

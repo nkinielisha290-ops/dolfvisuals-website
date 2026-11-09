@@ -15,7 +15,7 @@ export default async function Contact() {
   const s = await getSettings();
   return (
     <>
-      <PageHero eyebrow={t.contact_eyebrow} title={t.contact_title} text={t.contact_text} />
+      <PageHero page="contact" eyebrow={t.contact_eyebrow} title={t.contact_title} text={t.contact_text} />
       <section className="mx-auto grid max-w-7xl gap-16 px-4 py-20 sm:px-8 md:py-28 lg:grid-cols-[1fr_1.5fr]">
         <div className="space-y-10">
           {[

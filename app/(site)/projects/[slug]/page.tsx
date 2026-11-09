@@ -23,7 +23,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const items = (await getPortfolio()).filter((i) => i.project_slug === slug);
   return (
     <>
-      <PageHero eyebrow={[p.client, p.project_date?.slice(0, 4)].filter(Boolean).join(" · ") || t.projects_eyebrow}
+      <PageHero page="projects" eyebrow={[p.client, p.project_date?.slice(0, 4)].filter(Boolean).join(" · ") || t.projects_eyebrow}
         title={tr(p, "title", lang)} text={tr(p, "summary", lang)} image={p.cover_url} />
       {items.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-8 md:py-24">

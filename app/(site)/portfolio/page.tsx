@@ -16,7 +16,7 @@ export default async function Portfolio({ searchParams }: { searchParams: Promis
   const items = await getPortfolio();
   return (
     <>
-      <PageHero eyebrow={t.portfolio_eyebrow} title={t.portfolio_title} />
+      <PageHero page="portfolio" eyebrow={t.portfolio_eyebrow} title={t.portfolio_title} />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-8 md:py-20">
         <Gallery items={toGallery(items, lang)} allLabel={t.all} closeLabel={t.gallery_close} initialCategory={c ?? "all"} />
       </section>

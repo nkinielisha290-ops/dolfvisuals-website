@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import SectionHead from "@/components/SectionHead";
 import { SocialIcon } from "@/components/SocialIcons";
+import BgVideo from "@/components/motion/BgVideo";
 import Counter from "@/components/motion/Counter";
 import HorizontalScroll from "@/components/motion/HorizontalScroll";
 import Magnetic from "@/components/motion/Magnetic";
@@ -11,6 +12,7 @@ import SplitText from "@/components/motion/SplitText";
 import { CATEGORIES, categoryLabel, getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getPortfolio, getServices, getSettings, getTestimonials, waLink } from "@/lib/data";
+import { reelFor } from "@/lib/reels";
 
 export const revalidate = 60;
 
@@ -35,8 +37,8 @@ export default async function Home() {
 
   const featured = portfolio.filter((p) => p.featured);
   const heroPool = (featured.length >= 6 ? featured : portfolio).slice(0, 9);
-  const columns = [0, 1, 2].map((c) => heroPool.filter((_, i) => i % 3 === c));
   const bg = heroPool[0]?.image_url;
+  const reel = reelFor("home", settings);
   const title = tr(settings, "hero_title", lang);
   const work = (featured.length ? featured : portfolio).slice(0, LAYOUT.length);
   const img = (cat: string, i = 0) => portfolio.filter((p) => p.category.startsWith(cat))[i]?.image_url ?? portfolio[i]?.image_url;
@@ -52,26 +54,9 @@ export default async function Home() {
     <>
       {/* ================= HERO ================= */}
       <section className="relative isolate flex min-h-[100svh] items-end overflow-hidden lg:items-center">
-        {bg && (
-          <div className="absolute inset-0 -z-20 lg:hidden">
-            <Image src={bg} alt="" fill priority sizes="100vw" className="animate-kenburns object-cover object-[50%_25%]" />
-          </div>
-        )}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/75 to-ink/30 lg:bg-none" />
-
-        <div aria-hidden className="absolute inset-y-0 right-0 -z-10 hidden w-[54%] grid-cols-3 gap-4 overflow-hidden px-4 lg:grid">
-          {columns.map((col, c) => (
-            <div key={c} className={`flex flex-col gap-4 ${c === 1 ? "animate-[colup_60s_linear_infinite]" : "animate-[coldown_70s_linear_infinite]"}`}>
-              {[...col, ...col, ...col].map((p, i) => (
-                <div key={`${p.id}-${i}`} className="relative aspect-[4/5] w-full shrink-0 overflow-hidden">
-                  <Image src={p.image_url} alt="" fill sizes="18vw" priority={i < 2} className="object-cover" />
-                </div>
-              ))}
-            </div>
-          ))}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/10 to-transparent" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/60 via-transparent to-ink/90" />
-        </div>
+        <BgVideo src={reel.src} srcMobile={reel.srcMobile} poster={reel.poster ?? bg} className="-z-20 [&_video]:scale-105" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/50 to-ink/40" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/90 via-ink/40 to-transparent" />
 
         <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-32 sm:px-8 lg:pb-0">
           <div className="max-w-2xl">
@@ -98,6 +83,7 @@ export default async function Home() {
           <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5 font-sub text-[0.68rem] uppercase tracking-[0.3em] text-white/45">
             <span>Est. 11.10.2025</span>
             <span className="flex items-center gap-3"><span className="h-px w-10 bg-gold" />{t.scroll}</span>
+            <span className="flex items-center gap-2"><span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-60" /><span className="relative inline-flex size-2 rounded-full bg-red-500" /></span>Showreel</span>
             <span>{tr(settings, "location", lang)}</span>
           </div>
         </div>
