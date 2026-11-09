@@ -20,7 +20,7 @@ export default async function Services() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-8 md:py-28">
         <div className="divide-y divide-line border-y border-line">
           {services.map((s, i) => (
-            <Link key={s.id} href={`/services/${s.slug}`} className="reveal group grid items-center gap-6 py-10 md:grid-cols-[80px_1fr_240px] md:gap-10">
+            <Link key={s.id} href={`/services/${s.slug}`} data-cursor="Explore" className="reveal card-shine group grid items-center gap-6 py-10 md:grid-cols-[80px_1fr_240px] md:gap-10">
               <span className="font-display text-3xl text-white/25 transition group-hover:text-gold">{String(i + 1).padStart(2, "0")}</span>
               <div>
                 <h2 className="font-heading text-2xl font-bold transition group-hover:text-gold sm:text-3xl">{tr(s, "title", lang)}</h2>

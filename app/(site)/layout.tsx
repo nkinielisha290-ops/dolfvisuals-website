@@ -2,6 +2,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import Intro from "@/components/Intro";
+import SmoothScroll from "@/components/motion/SmoothScroll";
+import Cursor from "@/components/motion/Cursor";
+import BackToTop from "@/components/motion/BackToTop";
 import { SocialIcon } from "@/components/SocialIcons";
 import { getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
@@ -40,8 +43,10 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <>
       <Intro />
+      <SmoothScroll />
+      <Cursor />
       <Header lang={lang} nav={nav} bookLabel={t.nav_book} />
-      <main>{children}</main>
+      <main className="grain">{children}</main>
       <div aria-hidden className="overflow-hidden border-t border-line py-10">
         <div className="flex w-max animate-[marquee_60s_linear_infinite] whitespace-nowrap font-display text-[clamp(4rem,12vw,10rem)] leading-none tracking-wide">
           {[0, 1].map((k) => (
@@ -58,6 +63,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         className="fixed bottom-5 right-5 z-40 grid size-14 place-items-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/40 transition hover:scale-105">
         <SocialIcon name="whatsapp" className="size-7" />
       </a>
+      <BackToTop label={lang === "sw" ? "Rudi juu" : "Back to top"} />
       <Reveal />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </>

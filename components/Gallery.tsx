@@ -69,7 +69,7 @@ export default function Gallery({ items, allLabel, closeLabel, filter = true, in
 
       <div key={cat} className="columns-2 gap-3 sm:gap-4 md:columns-3 lg:columns-4">
         {shown.map((it, i) => (
-          <button key={it.id} type="button" onClick={() => setIdx(i)}
+          <button key={it.id} type="button" onClick={() => setIdx(i)} data-cursor={it.videoUrl ? "Play" : "View"}
             style={{ animationDelay: `${Math.min(i, 12) * 60}ms` }}
             className="animate-fadeup group relative mb-3 block w-full overflow-hidden bg-ink-2 text-left sm:mb-4 break-inside-avoid">
             <Image src={it.src} alt={it.title} width={it.w} height={it.h}

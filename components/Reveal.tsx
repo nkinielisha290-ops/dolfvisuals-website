@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export default function Reveal() {
   const path = usePathname();
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal:not(.in), .reveal-img:not(.in)"));
+    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal:not(.in), .reveal-img:not(.in), .split:not(.in), .eyebrow-line:not(.in), .draw-line:not(.in)"));
     if (!("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }),

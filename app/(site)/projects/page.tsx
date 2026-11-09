@@ -22,7 +22,7 @@ export default async function Projects() {
         ) : (
           <div className="grid gap-x-8 gap-y-16 md:grid-cols-2">
             {projects.map((p, i) => (
-              <Link key={p.id} href={`/projects/${p.slug}`} className={`reveal group ${i % 2 ? "md:mt-24" : ""}`}>
+              <Link key={p.id} href={`/projects/${p.slug}`} data-cursor="View" className={`reveal group ${i % 2 ? "md:mt-24" : ""}`}>
                 <div className="reveal-img relative aspect-[4/5] overflow-hidden bg-ink-2">
                   {p.cover_url && <Image src={p.cover_url} alt={tr(p, "title", lang)} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover transition duration-700 group-hover:scale-105" />}
                 </div>

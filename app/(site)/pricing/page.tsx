@@ -19,7 +19,7 @@ export default async function Pricing() {
     .filter((x) => x.pkgs.length);
 
   const Card = ({ p }: { p: (typeof packages)[number] }) => (
-    <div className={`reveal relative flex flex-col border p-8 sm:p-10 ${p.featured ? "border-gold bg-ink-2" : "border-line"}`}>
+    <div className={`reveal card-shine relative flex flex-col border p-8 sm:p-10 ${p.featured ? "border-gold bg-ink-2" : "border-line"}`}>
       {p.featured && <span className="absolute -top-3 left-8 bg-gold px-3 py-1 font-sub text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-ink">{t.most_popular}</span>}
       <h3 className="font-display text-4xl tracking-wide">{tr(p, "name", lang)}</h3>
       {tr(p, "price_note", lang) && <p className="mt-1 text-sm text-white/50">{tr(p, "price_note", lang)}</p>}

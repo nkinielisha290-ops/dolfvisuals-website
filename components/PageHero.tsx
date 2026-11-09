@@ -10,7 +10,7 @@ export default function PageHero({ eyebrow, title, text, image }: { eyebrow: str
         </>
       )}
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
-        <p className="eyebrow animate-fadeup">{eyebrow}</p>
+        <p className="eyebrow eyebrow-line in animate-fadeup">{eyebrow}</p>
         <h1 className="mt-5 max-w-4xl font-display text-6xl leading-[0.9] tracking-wide text-white sm:text-7xl md:text-8xl">
           {title.split(" ").map((w, i) => (
             <span key={i} className="word mr-[0.2em]"><span style={{ animationDelay: `${0.1 + i * 0.07}s` }}>{w}</span></span>
