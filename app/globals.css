@@ -54,10 +54,7 @@ body {
 
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
 .reveal.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-  * { animation: none !important; scroll-behavior: auto !important; }
-}
+
 
 @layer components {
 .eyebrow {
@@ -145,10 +142,7 @@ select.field option { background: #111; }
 
 .text-outline { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.22); }
 
-@media (prefers-reduced-motion: reduce) {
-  .reveal-img::after { display: none; } .reveal-img img { transform: none; }
-  .word > span { animation: none; }
-}
+
 
 /* ================= Enterprise motion layer ================= */
 /* word split reveal: triggered by .in on itself or an ancestor */
@@ -200,6 +194,4 @@ select.field option { background: #111; }
   animation: grain 1.2s steps(6) infinite; }
 @keyframes grain { 0%{transform:translate(0,0)} 20%{transform:translate(-3%,2%)} 40%{transform:translate(2%,-3%)} 60%{transform:translate(-2%,3%)} 80%{transform:translate(3%,1%)} 100%{transform:translate(0,0)} }
 
-@media (prefers-reduced-motion: reduce) {
-  .split-w > span { transform: none; } .hl-word { color: #fff; } .draw-line { transform: none; } .grain::before { display: none; }
-}
+@media (prefers-reduced-motion: reduce) { .grain::before { display: none; } }

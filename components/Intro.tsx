@@ -7,7 +7,7 @@ export default function Intro() {
   useEffect(() => {
     let seen = false;
     try { seen = sessionStorage.getItem("dv-intro") === "1"; sessionStorage.setItem("dv-intro", "1"); } catch {}
-    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setState("gone"); return; }
+    if (seen) { setState("gone"); return; }
     document.documentElement.style.overflow = "hidden";
     const a = setTimeout(() => setState("leaving"), 1700);
     const b = setTimeout(() => { setState("gone"); document.documentElement.style.overflow = ""; }, 2600);

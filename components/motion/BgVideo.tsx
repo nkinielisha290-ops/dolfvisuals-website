@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Muted, looping background video. Picks the portrait file on narrow screens,
- * pauses when off-screen, and shows only the poster for reduced-motion users.
+ * pauses when off-screen, and retries playback on the first touch/scroll if autoplay was blocked.
  */
 export default function BgVideo({ src, srcMobile, poster, className = "" }: {
   src: string; srcMobile?: string | null; poster?: string | null; className?: string;
@@ -12,7 +12,6 @@ export default function BgVideo({ src, srcMobile, poster, className = "" }: {
   const [file, setFile] = useState<string | null>(null);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     if (conn?.saveData) return;
     setFile(srcMobile && window.matchMedia("(max-width: 767px)").matches ? srcMobile : src);
@@ -26,7 +25,16 @@ export default function BgVideo({ src, srcMobile, poster, className = "" }: {
       else v.pause();
     }, { threshold: 0.05 });
     io.observe(v);
-    return () => io.disconnect();
+    const kick = () => { v.play().catch(() => {}); };
+    window.addEventListener("touchstart", kick, { once: true, passive: true });
+    window.addEventListener("pointerdown", kick, { once: true });
+    window.addEventListener("scroll", kick, { once: true, passive: true });
+    return () => {
+      io.disconnect();
+      window.removeEventListener("touchstart", kick);
+      window.removeEventListener("pointerdown", kick);
+      window.removeEventListener("scroll", kick);
+    };
   }, [file]);
 
   return (

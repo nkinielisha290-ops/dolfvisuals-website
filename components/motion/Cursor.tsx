@@ -10,7 +10,7 @@ export default function Cursor() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
     setEnabled(true);
     document.documentElement.classList.add("has-cursor");
     let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y, id = 0;
