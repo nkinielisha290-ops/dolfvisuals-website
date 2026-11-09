@@ -1,9 +1,9 @@
 import type { Settings } from "./types";
 
-export type Reel = { src: string; srcMobile: string | null; poster: string | null };
+export type Reel = { src: string; srcMobile: string | null; poster: string | null; posterMobile?: string | null };
 
 const builtIn = (name: "home" | "story" | "corporate" | "studio"): Reel => ({
-  src: `/reels/reel-${name}.mp4`, srcMobile: `/reels/reel-${name}-m.mp4`, poster: `/reels/reel-${name}.jpg`,
+  src: `/reels/reel-${name}.mp4`, srcMobile: `/reels/reel-${name}-m.mp4`, poster: `/reels/reel-${name}.jpg`, posterMobile: `/reels/reel-${name}-m.jpg`,
 });
 
 /** Page → built-in reel (made from the client's own photos). A showreel set in Admin → Settings overrides all pages. */

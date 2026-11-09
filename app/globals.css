@@ -227,3 +227,7 @@ html.theme-switching .site, html.theme-switching .site * {
 .text-shadow-hero .btn-gold, .text-shadow-hero .btn-ghost { text-shadow: none; }
 .text-shadow-hero .eyebrow { color: rgba(255,255,255,.92); }
 .text-shadow-hero .eyebrow-line::before { background: #fff; }
+
+/* outlined hero word */
+.text-outline-hero span { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.95); text-shadow: none; }
+@media (min-width: 1024px) { .text-outline-hero span { -webkit-text-stroke-width: 3px; } }

@@ -9,6 +9,7 @@ import BgVideo from "@/components/motion/BgVideo";
 import Counter from "@/components/motion/Counter";
 import HorizontalScroll from "@/components/motion/HorizontalScroll";
 import Magnetic from "@/components/motion/Magnetic";
+import RotatingBadge from "@/components/motion/RotatingBadge";
 import ScrollHighlight from "@/components/motion/ScrollHighlight";
 import SplitText from "@/components/motion/SplitText";
 import { CATEGORIES, categoryLabel, getDict, tr } from "@/lib/i18n";
@@ -42,6 +43,9 @@ export default async function Home() {
   const bg = heroPool[0]?.image_url;
   const reel = reelFor("home", settings);
   const title = tr(settings, "hero_title", lang);
+  // split the headline into 3 balanced lines: "Turning" / "moments" / "into art"
+  const hw = title.split(" ");
+  const heroLines = hw.length >= 3 ? [hw[0], hw[1], hw.slice(2).join(" ")] : [title];
   const work = (featured.length ? featured : portfolio).slice(0, LAYOUT.length);
   const img = (cat: string, i = 0) => portfolio.filter((p) => p.category.startsWith(cat))[i]?.image_url ?? portfolio[i]?.image_url;
 
@@ -55,38 +59,42 @@ export default async function Home() {
   return (
     <>
       {/* ================= HERO ================= */}
-      <section className="theme-dark relative isolate flex min-h-[100svh] items-end overflow-hidden lg:items-center">
-        <BgVideo src={reel.src} srcMobile={reel.srcMobile} poster={reel.poster ?? bg} className="-z-20 [&_video]:scale-105" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/40 via-black/5 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />
+      <section className="theme-dark relative isolate flex min-h-[100svh] flex-col overflow-hidden">
+        <BgVideo src={reel.src} srcMobile={reel.srcMobile} poster={reel.poster ?? bg} className="-z-20"
+          toggle toggleClassName="absolute right-4 top-24 z-10 sm:right-8 sm:top-28" labels={sw ? { pause: "Simamisha video", play: "Cheza video" } : undefined} />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
 
-        <div className="text-shadow-hero mx-auto w-full max-w-7xl px-4 pb-28 pt-32 sm:px-8 lg:pb-0">
-          <div className="max-w-2xl">
-            <p className="eyebrow animate-fadeup [animation-delay:.2s]">Photography · Videography · Creative Agency</p>
-            <h1 className="mt-6 font-display text-[clamp(4rem,11vw,9.5rem)] leading-[0.86] tracking-wide text-white">
-              {title.split(" ").map((w, i, arr) => (
-                <span key={i} className="word mr-[0.22em]">
-                  <span className={i === arr.length - 1 ? "text-gold" : ""} style={{ animationDelay: `${0.35 + i * 0.09}s` }}>{w}</span>
-                </span>
-              ))}
-            </h1>
-            <p className="mt-7 max-w-lg text-base leading-relaxed text-white/70 animate-fadeup [animation-delay:.75s] sm:text-lg">
-              {tr(settings, "hero_subtitle", lang)}
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3 animate-fadeup [animation-delay:.9s]">
-              <Magnetic><Link href="/portfolio" className="btn-gold" data-cursor="View">{t.hero_cta_work} <ArrowRight className="size-4" /></Link></Magnetic>
-              <Magnetic><Link href="/booking" className="btn-ghost" data-cursor="Book">{t.hero_cta_book}</Link></Magnetic>
+        <div className="text-shadow-hero mx-auto flex w-full max-w-[96rem] flex-1 flex-col justify-end px-4 pb-8 pt-32 sm:px-8 lg:pb-10">
+          <p className="eyebrow animate-fadeup [animation-delay:.2s]">
+            <span className="mr-3 inline-flex items-center gap-2 border border-white/30 px-2.5 py-1 align-middle text-[0.6rem] tracking-[0.25em] backdrop-blur-sm">
+              <span className="relative flex size-1.5"><span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500" /><span className="relative inline-flex size-1.5 rounded-full bg-red-500" /></span>
+              Showreel
+            </span>
+            Photography · Videography · Creative Agency
+          </p>
+
+          <h1 aria-label={title} className="mt-6 font-display text-[clamp(4.2rem,13.5vw,14rem)] uppercase leading-[0.82] tracking-[0.01em] text-white">
+            {heroLines.map((line, li) => (
+              <span key={li} className={`block ${li === 1 ? "text-outline-hero pl-[8vw]" : ""} ${li === heroLines.length - 1 ? "text-right sm:text-left sm:pl-[22vw]" : ""}`}>
+                {line.split(" ").map((w, i) => (
+                  <span key={i} className="word mr-[0.2em] last:mr-0">
+                    <span className={`${li === heroLines.length - 1 && i === line.split(" ").length - 1 ? "text-gold" : ""}`}
+                      style={{ animationDelay: `${0.3 + li * 0.14 + i * 0.06}s` }}>{w}</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </h1>
+
+          <div className="mt-10 grid items-end gap-8 border-t border-white/25 pt-8 animate-fadeup [animation-delay:1s] md:grid-cols-[1fr_auto] lg:grid-cols-[1.1fr_1fr_auto]">
+            <p className="max-w-md text-base leading-relaxed text-white/85 sm:text-lg">{tr(settings, "hero_subtitle", lang)}</p>
+            <div className="flex flex-wrap gap-3 lg:justify-center">
+              <Magnetic><Link href="/portfolio" className="btn-gold">{t.hero_cta_work} <ArrowRight className="size-4" /></Link></Magnetic>
+              <Magnetic><Link href="/booking" className="btn-ghost">{t.hero_cta_book}</Link></Magnetic>
             </div>
-          </div>
-        </div>
-
-        {/* hero meta bar */}
-        <div className="absolute inset-x-0 bottom-0 hidden border-t border-white/10 animate-fadeup [animation-delay:1.1s] lg:block">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5 font-sub text-[0.68rem] uppercase tracking-[0.3em] text-white/45">
-            <span>Est. 11.10.2025</span>
-            <span className="flex items-center gap-3"><span className="h-px w-10 bg-gold" />{t.scroll}</span>
-            <span className="flex items-center gap-2"><span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-60" /><span className="relative inline-flex size-2 rounded-full bg-red-500" /></span>Showreel</span>
-            <span>{tr(settings, "location", lang)}</span>
+            <RotatingBadge href="#work" label={t.scroll} className="hidden md:mr-16 md:grid"
+              text={`DOLF VISUALS • EST. 2025 • ${tr(settings, "location", lang).split(",")[0].toUpperCase()} • `} />
           </div>
         </div>
       </section>
@@ -186,7 +194,7 @@ export default async function Home() {
       </section>
 
       {/* ================= SELECTED WORK (editorial) ================= */}
-      <section className="mx-auto max-w-7xl px-4 py-28 sm:px-8 md:py-36">
+      <section id="work" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-28 sm:px-8 md:py-36">
         <div className="mb-16 flex flex-wrap items-end justify-between gap-6">
           <SectionHead eyebrow={t.portfolio_eyebrow} title={t.portfolio_title} />
           <Magnetic><Link href="/portfolio" className="btn-ghost" data-cursor="View">{t.portfolio_all} <ArrowRight className="size-4" /></Link></Magnetic>
