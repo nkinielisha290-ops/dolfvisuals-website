@@ -245,34 +245,54 @@ drop trigger if exists dv_clients_norm on public.dv_clients;
 create trigger dv_clients_norm before insert or update of phone on public.dv_clients
   for each row execute function public.dv_clients_normalize();
 
--- ---------- Client accounts (website sign-up → client portal) ----------
+-- ---------- Client accounts (website sign-up / Google → client portal) ----------
 alter table public.dv_settings add column if not exists x text;
 alter table public.dv_clients add column if not exists auth_user_id uuid unique references auth.users(id) on delete set null;
 
-create or replace function public.dv_my_client_id()
-returns uuid language sql stable security definer set search_path = public as $$
-  select id from public.dv_clients where auth_user_id = auth.uid() limit 1;
+-- Two-step verification: when a user has a verified authenticator app, their client data is only
+-- readable from a session that passed the second step (AAL2). Enforced in the database, not just the UI.
+create or replace function public.dv_mfa_ok()
+returns boolean language sql stable security definer set search_path = public, auth as $$
+  select coalesce(auth.jwt()->>'aal', 'aal1') = 'aal2'
+      or not exists (select 1 from auth.mfa_factors f where f.user_id = auth.uid() and f.status = 'verified');
 $$;
 
--- When a website account is created / its email is confirmed: link it to the client record with the
--- same (verified) email, or create a new client. Phone numbers are NOT used for linking because they
--- are not verified at sign-up.
-create or replace function public.dv_link_auth_user()
-returns trigger language plpgsql security definer set search_path = public as $$
-declare cid uuid; meta jsonb := coalesce(new.raw_user_meta_data, '{}'::jsonb);
+create or replace function public.dv_my_client_id()
+returns uuid language sql stable security definer set search_path = public as $$
+  select id from public.dv_clients where auth_user_id = auth.uid() and public.dv_mfa_ok() limit 1;
+$$;
+
+-- Link a confirmed account to the client record with the same (verified) email, or create one.
+-- Phone numbers are never used for linking because they are not verified.
+create or replace function public.dv_link_user(p_user uuid)
+returns uuid language plpgsql security definer set search_path = public, auth as $$
+declare u record; cid uuid; meta jsonb;
 begin
-  if coalesce(meta->>'dv_client', '') <> 'true' then return new; end if;     -- only website client sign-ups
-  if new.email_confirmed_at is null then return new; end if;                -- wait for email confirmation
-  if exists (select 1 from public.dv_clients where auth_user_id = new.id) then return new; end if;
+  select id, email, email_confirmed_at, raw_user_meta_data into u from auth.users where id = p_user;
+  if u.id is null or u.email is null or u.email_confirmed_at is null then return null; end if;
+  if exists (select 1 from public.dv_admin_users a where lower(a.email) = lower(u.email)) then return null; end if;  -- staff are not clients
+  select id into cid from public.dv_clients where auth_user_id = u.id;
+  if cid is not null then return cid; end if;
+  meta := coalesce(u.raw_user_meta_data, '{}'::jsonb);
   select id into cid from public.dv_clients
-    where auth_user_id is null and lower(email) = lower(new.email)
-    order by created_at limit 1;
+    where auth_user_id is null and lower(email) = lower(u.email) order by created_at limit 1;
   if cid is null then
     insert into public.dv_clients (name, phone, email, source, auth_user_id)
-    values (coalesce(nullif(meta->>'name', ''), split_part(new.email, '@', 1)), nullif(meta->>'phone', ''), new.email, 'website', new.id);
+    values (coalesce(nullif(meta->>'name', ''), nullif(meta->>'full_name', ''), split_part(u.email, '@', 1)),
+            nullif(meta->>'phone', ''), lower(u.email), 'website', u.id)
+    returning id into cid;
   else
-    update public.dv_clients set auth_user_id = new.id,
-      phone = coalesce(phone, nullif(meta->>'phone', '')) where id = cid;
+    update public.dv_clients set auth_user_id = u.id, phone = coalesce(phone, nullif(meta->>'phone', '')) where id = cid;
+  end if;
+  return cid;
+end $$;
+
+-- e-mail sign-ups from the website are linked as soon as the address is confirmed
+create or replace function public.dv_link_auth_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if coalesce(new.raw_user_meta_data->>'dv_client', '') = 'true' and new.email_confirmed_at is not null then
+    perform public.dv_link_user(new.id);
   end if;
   return new;
 end $$;
@@ -282,11 +302,19 @@ create trigger dv_auth_user_created after insert on auth.users for each row exec
 drop trigger if exists dv_auth_user_confirmed on auth.users;
 create trigger dv_auth_user_confirmed after update of email_confirmed_at on auth.users for each row execute function public.dv_link_auth_user();
 
+-- called by the website after any sign-in (e.g. "Continue with Google")
+create or replace function public.dv_claim_account()
+returns uuid language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null or not public.dv_mfa_ok() then return null; end if;
+  return public.dv_link_user(auth.uid());
+end $$;
+
 -- clients may edit only these profile fields
 create or replace function public.dv_update_my_profile(p_name text, p_phone text, p_organization text, p_address text)
 returns void language plpgsql security definer set search_path = public as $$
 begin
-  if auth.uid() is null then raise exception 'not signed in'; end if;
+  if auth.uid() is null or not public.dv_mfa_ok() then raise exception 'not allowed'; end if;
   update public.dv_clients set
     name = coalesce(nullif(trim(p_name), ''), name),
     phone = nullif(trim(p_phone), ''),
@@ -294,6 +322,8 @@ begin
     address = nullif(trim(p_address), '')
   where auth_user_id = auth.uid();
 end $$;
+
+revoke execute on function public.dv_link_user(uuid) from public, anon, authenticated;
 
 -- ---------- API access ----------
 grant usage on schema public to anon, authenticated;
@@ -308,6 +338,8 @@ grant select, insert, update, delete on
 grant usage on sequence public.dv_invoice_seq to authenticated;
 grant execute on function public.dv_is_admin() to anon, authenticated;
 grant execute on function public.dv_my_client_id() to authenticated;
+grant execute on function public.dv_claim_account() to authenticated;
+grant execute on function public.dv_mfa_ok() to authenticated;
 grant execute on function public.dv_update_my_profile(text, text, text, text) to authenticated;
 
 -- ---------- Row Level Security ----------
@@ -339,7 +371,7 @@ create policy "public insert" on public.dv_bookings for insert
 
 -- signed-in clients see only their own records (drafts and internal notes stay private)
 drop policy if exists "client own" on public.dv_clients;
-create policy "client own" on public.dv_clients for select using (auth_user_id = auth.uid());
+create policy "client own" on public.dv_clients for select using (auth_user_id = auth.uid() and public.dv_mfa_ok());
 drop policy if exists "client own" on public.dv_bookings;
 create policy "client own" on public.dv_bookings for select using (client_id is not null and client_id = public.dv_my_client_id());
 drop policy if exists "client own" on public.dv_invoices;

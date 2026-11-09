@@ -15,9 +15,10 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   const lang = await getLang();
   const a = getAcc(lang);
   const settings = await getSettings();
+  const notice = error === "google" ? "google" : error === "expired" ? "expired" : error ? "link" : undefined;
   return (
-    <AuthShell a={a} title={a.login_title} text={a.login_text} image="/portfolio/studio-portrait-golden.webp">
-      {hasSupabase ? <LoginForm a={a} next={next} linkError={error === "link"} /> : <NotConfigured a={a} whatsapp={settings.whatsapp} bookLabel={getDict(lang).nav_book} />}
+    <AuthShell a={a} tab="signin" title={a.login_title} text={a.login_text}>
+      {hasSupabase ? <LoginForm a={a} next={next} notice={notice} /> : <NotConfigured a={a} whatsapp={settings.whatsapp} bookLabel={getDict(lang).nav_book} />}
     </AuthShell>
   );
 }

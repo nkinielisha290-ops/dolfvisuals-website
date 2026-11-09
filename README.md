@@ -71,12 +71,31 @@ Tables zote zina kiambishi `dv_`, kwa hiyo database hii inaweza kukaa kwenye Sup
 
 ## Akaunti za wateja — `/account`
 
-- **Kujisajili:** `/account/register` (jina, simu, email, nenosiri). Mteja anapokea email ya kuthibitisha, kisha anaingia `/account/login`. Kuna "Forgot password" (`/account/forgot`).
-- **Portal ya mteja:** booking zake zote na hatua ya kazi (progress bar), namba ya kumbukumbu, kitufe cha kupakua kazi ikiwa tayari (link ya deliverables kutoka admin), invoice zake (kuona / kuchapisha / PDF), malipo yake, na kubadilisha taarifa na nenosiri.
-- **Kuunganisha na CRM:** akaunti ikithibitishwa, inaunganishwa na mteja aliyepo mwenye email ileile, au inaunda mteja mpya. Booking anazoweka akiwa ameingia zinaingia kwenye akaunti yake moja kwa moja, na fomu inajazwa taarifa zake.
-- **Usalama (RLS):** mteja anaona rekodi zake tu. Invoice za "draft" na notes za ndani za admin hazionekani kwake.
-- **Supabase → Authentication → URL Configuration:** weka *Site URL* = domain ya website, na *Redirect URLs* = `https://<domain>/auth/callback`.
-- Bila Supabase, kurasa hizi zinaonyesha ujumbe wa "coming soon" pamoja na vitufe vya booking na WhatsApp.
+**Njia za kuingia:** Google ("Continue with Google"), barua pepe + nenosiri, au link ya kuingia bila nenosiri (magic link).
+
+**Portal ("Studio Pass"):**
+- *Overview*: kadi ya dhahabu ya mteja (jina, namba ya mteja, tangu lini, hali ya 2FA), countdown ya session inayofuata, muhtasari wa malipo, booking ya karibuni.
+- *Bookings*: kila booking kama fremu ya filamu, yenye hatua 6 za kazi (Imepokelewa → Maandalizi → Upigaji → Uhariri → Ukaguzi → Imekabidhiwa) na kitufe cha kupakua kazi.
+- *Billing*: invoice kama tiketi (muhuri wa PAID, kiasi kilicholipwa), na historia ya malipo.
+- *Settings & security*: taarifa binafsi, 2FA, njia za kuingia, kubadilisha nenosiri, na kutoka kwenye vifaa vingine.
+
+**Ulinzi wa akaunti:**
+- Uthibitisho wa email kabla ya kuingia, pamoja na kitufe cha kutuma tena.
+- Uthibitisho wa hatua mbili (TOTP: Google Authenticator, Authy, Microsoft Authenticator). Unalazimishwa kwenye database (RLS): bila code, data ya mteja haisomeki hata kama mtu ana nenosiri.
+- Nenosiri: herufi 8+ zenye herufi na namba, kipimo cha nguvu, na ukaguzi wa Have I Been Pwned (k-anonymity) unaokataa manenosiri yaliyovuja.
+- Kubadilisha nenosiri kunahitaji nenosiri la sasa. Kurudisha nenosiri ni kwa link ya email.
+- Rate limiting ya ziada kwenye kila fomu, honeypot dhidi ya bots, na CAPTCHA (Cloudflare Turnstile) si lazima.
+- Redirect zinaruhusiwa ndani ya website tu, sessions ni cookies za httpOnly, na kuna "Sign out of all other devices".
+- Akaunti za admin (`dv_admin_users`) haziwi wateja. Mteja anaona rekodi zake tu, bila draft wala notes za ndani.
+
+**Kuwasha (Supabase dashboard):**
+1. *Authentication → URL Configuration*: Site URL = domain ya website, na Redirect URLs = `https://<domain>/auth/callback`.
+2. *Authentication → Providers → Email*: Confirm email = ON, Secure email change = ON, minimum password length = 8.
+3. *Authentication → Providers → Google*: weka Client ID + Secret kutoka Google Cloud Console (OAuth client, Web application). Authorized redirect URI ni `https://<project>.supabase.co/auth/v1/callback`.
+4. *Authentication → Multi-Factor*: TOTP = enabled (kwa kawaida iko ON).
+5. Si lazima: *Authentication → Attack Protection* → CAPTCHA (Turnstile) + leaked password protection. Kisha weka `NEXT_PUBLIC_TURNSTILE_SITE_KEY` kwenye Vercel.
+
+Bila Supabase, kurasa hizi zinaonyesha ujumbe wa "coming soon" pamoja na vitufe vya booking na WhatsApp.
 
 ## Social media
 

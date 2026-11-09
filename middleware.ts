@@ -26,18 +26,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(to);
   }
   // client portal: everything under /account needs a session except the sign-in / sign-up pages
+  const go = (pathname: string, search = "") => {
+    const to = request.nextUrl.clone();
+    to.pathname = pathname;
+    to.search = search;
+    const r = NextResponse.redirect(to);
+    response.cookies.getAll().forEach((c) => r.cookies.set(c)); // keep refreshed session cookies
+    return r;
+  };
   const open = ["/account/login", "/account/register", "/account/forgot"];
-  if ((path === "/account" || path.startsWith("/account/") || path.startsWith("/invoice/")) && !open.includes(path) && !data.user) {
-    const to = request.nextUrl.clone();
-    to.pathname = "/account/login";
-    to.search = `?next=${encodeURIComponent(path)}`;
-    return NextResponse.redirect(to);
-  }
-  if ((path === "/account/login" || path === "/account/register") && data.user) {
-    const to = request.nextUrl.clone();
-    to.pathname = "/account";
-    to.search = "";
-    return NextResponse.redirect(to);
+  const portal = path === "/account" || path.startsWith("/account/") || path.startsWith("/invoice/");
+  if (portal && !open.includes(path) && !data.user) return go("/account/login", `?next=${encodeURIComponent(path)}`);
+  if (portal && data.user && path !== "/account/verify") {
+    // second step (authenticator app) still pending → ask for the code before anything else
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") return go("/account/verify", `?next=${encodeURIComponent(open.includes(path) ? "/account" : path)}`);
+    if (path === "/account/login" || path === "/account/register") return go("/account");
   }
   return response;
 }
