@@ -128,7 +128,7 @@ export async function deleteInquiry(id: string) {
 
 const SETTINGS_FIELDS = [
   "tagline_en", "tagline_sw", "hero_title_en", "hero_title_sw", "hero_subtitle_en", "hero_subtitle_sw",
-  "phone", "whatsapp", "email", "location_en", "location_sw", "instagram", "facebook", "tiktok", "youtube", "linkedin",
+  "phone", "whatsapp", "email", "location_en", "location_sw", "instagram", "facebook", "tiktok", "youtube", "linkedin", "x",
   "hero_video_url", "hero_video_mobile_url",
 ];
 
@@ -137,7 +137,7 @@ export async function saveSettings(_: string | null, fd: FormData): Promise<stri
   const row: Record<string, string | null> = {};
   for (const k of SETTINGS_FIELDS) {
     const v = String(fd.get(k) ?? "").trim();
-    row[k] = v || (["instagram", "facebook", "tiktok", "youtube", "linkedin", "hero_video_url", "hero_video_mobile_url"].includes(k) ? null : "");
+    row[k] = v || (["instagram", "facebook", "tiktok", "youtube", "linkedin", "x", "hero_video_url", "hero_video_mobile_url"].includes(k) ? null : "");
   }
   if (row.whatsapp) row.whatsapp = row.whatsapp.replace(/[^\d]/g, "");
   const { error } = await sb.from("dv_settings").upsert({ id: 1, ...row, updated_at: new Date().toISOString() });

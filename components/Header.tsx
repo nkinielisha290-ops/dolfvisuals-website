@@ -2,14 +2,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, UserRound, X } from "lucide-react";
 import LangSwitch from "./LangSwitch";
+import { SocialIcon } from "./SocialIcons";
 import ThemeToggle from "./ThemeToggle";
 import type { Lang } from "@/lib/types";
 
 type NavItem = { href: string; label: string };
 
-export default function Header({ lang, nav, bookLabel, themeLabels }: { lang: Lang; nav: NavItem[]; bookLabel: string; themeLabels: { light: string; dark: string } }) {
+export default function Header({ lang, nav, bookLabel, accountLabel, socials = [], themeLabels }: { lang: Lang; nav: NavItem[]; bookLabel: string; accountLabel: string; socials?: { key: string; label: string; url: string }[]; themeLabels: { light: string; dark: string } }) {
   const path = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -56,6 +57,10 @@ export default function Header({ lang, nav, bookLabel, themeLabels }: { lang: La
         <div className="flex items-center gap-5">
           <LangSwitch lang={lang} className="hidden sm:flex" />
           <ThemeToggle labels={themeLabels} className="hidden sm:grid" />
+          <Link href="/account" aria-label={accountLabel} title={accountLabel}
+            className={`hidden size-9 place-items-center rounded-full border transition sm:grid ${path.startsWith("/account") ? "border-gold text-gold" : "border-white/20 text-white/80 hover:border-gold hover:text-gold"}`}>
+            <UserRound className="size-4" />
+          </Link>
           <Link href="/booking" className="btn-gold hidden !px-5 !py-2.5 !text-[0.8rem] md:inline-flex">{bookLabel}</Link>
           <button type="button" onClick={() => setOpen((o) => !o)} className="text-white xl:hidden" aria-label="Menu" aria-expanded={open}>
             {open ? <X className="size-7" /> : <Menu className="size-7" />}
@@ -73,10 +78,23 @@ export default function Header({ lang, nav, bookLabel, themeLabels }: { lang: La
               </Link>
             ))}
           </nav>
+          <Link href="/account" className="mt-6 flex items-center gap-3 border border-white/10 px-4 py-3 font-sub text-sm text-white/85 hover:border-gold hover:text-gold">
+            <UserRound className="size-5 text-gold" /> {accountLabel}
+          </Link>
           <div className="mt-8 flex items-center justify-between">
             <div className="flex items-center gap-4"><LangSwitch lang={lang} /><ThemeToggle labels={themeLabels} /></div>
             <Link href="/booking" className="btn-gold">{bookLabel}</Link>
           </div>
+          {socials.length > 0 && (
+            <div className="mt-8 flex flex-wrap gap-3 border-t border-white/5 pt-6">
+              {socials.map((s) => (
+                <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label}
+                  className="grid size-10 place-items-center border border-white/15 text-white/75 hover:border-gold hover:text-gold">
+                  <SocialIcon name={s.key} className="size-4" />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </header>

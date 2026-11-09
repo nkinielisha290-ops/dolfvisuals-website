@@ -24,6 +24,7 @@ export const seedSettings: Settings = {
   tiktok: null,
   youtube: null,
   linkedin: null,
+  x: null,
   founded: "2025-10-11",
   hero_video_url: null,
   hero_video_mobile_url: null,

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { hasSupabase } from "@/lib/supabase/config";
-import { supabasePublic } from "@/lib/supabase/server";
+import { supabasePublic, supabaseServer } from "@/lib/supabase/server";
 
 export async function setLang(lang: "en" | "sw") {
   (await cookies()).set("lang", lang, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
@@ -69,7 +69,11 @@ export async function submitBooking(_prev: FormState, fd: FormData): Promise<For
   ].filter(Boolean).join("\n");
 
   if (hasSupabase) {
-    const { error } = await supabasePublic().from("dv_bookings").insert(row);
+    // signed-in clients: attach the booking to their account so it shows in the client portal
+    const sb = await supabaseServer();
+    const { data: { user } } = await sb.auth.getUser();
+    const clientId = user ? (await sb.rpc("dv_my_client_id")).data as string | null : null;
+    const { error } = await (user ? sb : supabasePublic()).from("dv_bookings").insert({ ...row, client_id: clientId ?? null });
     if (error) {
       console.error("[booking]", error);
       return { ok: false, error: "generic", summary };

@@ -43,7 +43,7 @@ const groups: { title: string; fields: [keyof Settings, string, ("textarea" | "t
     ["hero_video_mobile_url", "Showreel video URL — phones (MP4, portrait, optional)"],
   ] },
   { title: "Social media links", fields: [
-    ["instagram", "Instagram URL"], ["facebook", "Facebook URL"], ["tiktok", "TikTok URL"], ["youtube", "YouTube URL"], ["linkedin", "LinkedIn URL"],
+    ["instagram", "Instagram URL"], ["facebook", "Facebook URL"], ["tiktok", "TikTok URL"], ["youtube", "YouTube URL"], ["linkedin", "LinkedIn URL"], ["x", "X (Twitter) URL"],
   ] },
 ];
 

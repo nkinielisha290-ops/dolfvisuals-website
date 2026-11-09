@@ -43,15 +43,17 @@ function ErrorLine({ state, t }: { state: FormState; t: Dict }) {
 
 const honeypot = <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />;
 
-export function BookingForm({ t, services, whatsapp, defaultService, defaultKind = "booking" }: {
-  t: Dict; services: { slug: string; title: string }[]; whatsapp: string; defaultService?: string; defaultKind?: "booking" | "quote";
+type Contact = { name?: string; phone?: string; email?: string };
+
+export function BookingForm({ t, services, whatsapp, defaultService, defaultKind = "booking", contact }: {
+  t: Dict; services: { slug: string; title: string }[]; whatsapp: string; defaultService?: string; defaultKind?: "booking" | "quote"; contact?: Contact;
 }) {
   const [key, setKey] = useState(0);
-  return <BookingInner key={key} t={t} services={services} whatsapp={whatsapp} defaultService={defaultService} defaultKind={defaultKind} reset={() => setKey((k) => k + 1)} />;
+  return <BookingInner key={key} t={t} services={services} whatsapp={whatsapp} defaultService={defaultService} defaultKind={defaultKind} contact={contact} reset={() => setKey((k) => k + 1)} />;
 }
 
-function BookingInner({ t, services, whatsapp, defaultService, defaultKind, reset }: {
-  t: Dict; services: { slug: string; title: string }[]; whatsapp: string; defaultService?: string; defaultKind: "booking" | "quote"; reset: () => void;
+function BookingInner({ t, services, whatsapp, defaultService, defaultKind, contact, reset }: {
+  t: Dict; services: { slug: string; title: string }[]; whatsapp: string; defaultService?: string; defaultKind: "booking" | "quote"; contact?: Contact; reset: () => void;
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(submitBooking, null);
   const [kind, setKind] = useState<"booking" | "quote">(defaultKind);
@@ -69,9 +71,9 @@ function BookingInner({ t, services, whatsapp, defaultService, defaultKind, rese
           </button>
         ))}
       </div>
-      <Field label={`${t.f_name} *`}><input name="name" required autoComplete="name" className="field" /></Field>
-      <Field label={`${t.f_phone} *`}><input name="phone" required type="tel" autoComplete="tel" placeholder="+255" className="field" /></Field>
-      <Field label={t.f_email}><input name="email" type="email" autoComplete="email" className="field" /></Field>
+      <Field label={`${t.f_name} *`}><input name="name" required autoComplete="name" defaultValue={contact?.name} className="field" /></Field>
+      <Field label={`${t.f_phone} *`}><input name="phone" required type="tel" autoComplete="tel" placeholder="+255" defaultValue={contact?.phone} className="field" /></Field>
+      <Field label={t.f_email}><input name="email" type="email" autoComplete="email" defaultValue={contact?.email} className="field" /></Field>
       <Field label={t.f_service}>
         <select name="service" defaultValue={defaultService ?? ""} className="field">
           <option value="">{t.f_choose}</option>

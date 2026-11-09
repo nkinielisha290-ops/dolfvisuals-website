@@ -214,9 +214,18 @@ create or replace function public.dv_link_booking_client()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare cid uuid; np text;
 begin
-  if new.client_id is not null then return new; end if;
+  if new.client_id is not null then
+    -- website visitors may only attach a booking to their own client record
+    if coalesce(auth.jwt()->>'role', '') in ('anon', 'authenticated') and not public.dv_is_admin()
+       and new.client_id is distinct from public.dv_my_client_id() then
+      new.client_id := null;
+    else
+      return new;
+    end if;
+  end if;
   np := public.dv_normalize_phone(new.phone);
-  select id into cid from public.dv_clients where phone_normalized = np order by created_at limit 1;
+  -- never attach an anonymous booking to a client who has a website account (they book while signed in)
+  select id into cid from public.dv_clients where phone_normalized = np and auth_user_id is null order by created_at limit 1;
   if cid is null then
     insert into public.dv_clients (name, phone, phone_normalized, email, source)
     values (new.name, new.phone, np, new.email, 'website') returning id into cid;
@@ -236,6 +245,56 @@ drop trigger if exists dv_clients_norm on public.dv_clients;
 create trigger dv_clients_norm before insert or update of phone on public.dv_clients
   for each row execute function public.dv_clients_normalize();
 
+-- ---------- Client accounts (website sign-up → client portal) ----------
+alter table public.dv_settings add column if not exists x text;
+alter table public.dv_clients add column if not exists auth_user_id uuid unique references auth.users(id) on delete set null;
+
+create or replace function public.dv_my_client_id()
+returns uuid language sql stable security definer set search_path = public as $$
+  select id from public.dv_clients where auth_user_id = auth.uid() limit 1;
+$$;
+
+-- When a website account is created / its email is confirmed: link it to the client record with the
+-- same (verified) email, or create a new client. Phone numbers are NOT used for linking because they
+-- are not verified at sign-up.
+create or replace function public.dv_link_auth_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare cid uuid; meta jsonb := coalesce(new.raw_user_meta_data, '{}'::jsonb);
+begin
+  if coalesce(meta->>'dv_client', '') <> 'true' then return new; end if;     -- only website client sign-ups
+  if new.email_confirmed_at is null then return new; end if;                -- wait for email confirmation
+  if exists (select 1 from public.dv_clients where auth_user_id = new.id) then return new; end if;
+  select id into cid from public.dv_clients
+    where auth_user_id is null and lower(email) = lower(new.email)
+    order by created_at limit 1;
+  if cid is null then
+    insert into public.dv_clients (name, phone, email, source, auth_user_id)
+    values (coalesce(nullif(meta->>'name', ''), split_part(new.email, '@', 1)), nullif(meta->>'phone', ''), new.email, 'website', new.id);
+  else
+    update public.dv_clients set auth_user_id = new.id,
+      phone = coalesce(phone, nullif(meta->>'phone', '')) where id = cid;
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists dv_auth_user_created on auth.users;
+create trigger dv_auth_user_created after insert on auth.users for each row execute function public.dv_link_auth_user();
+drop trigger if exists dv_auth_user_confirmed on auth.users;
+create trigger dv_auth_user_confirmed after update of email_confirmed_at on auth.users for each row execute function public.dv_link_auth_user();
+
+-- clients may edit only these profile fields
+create or replace function public.dv_update_my_profile(p_name text, p_phone text, p_organization text, p_address text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  update public.dv_clients set
+    name = coalesce(nullif(trim(p_name), ''), name),
+    phone = nullif(trim(p_phone), ''),
+    organization = nullif(trim(p_organization), ''),
+    address = nullif(trim(p_address), '')
+  where auth_user_id = auth.uid();
+end $$;
+
 -- ---------- API access ----------
 grant usage on schema public to anon, authenticated;
 grant select on public.dv_settings, public.dv_services, public.dv_packages, public.dv_projects,
@@ -248,6 +307,8 @@ grant select, insert, update, delete on
   to authenticated;
 grant usage on sequence public.dv_invoice_seq to authenticated;
 grant execute on function public.dv_is_admin() to anon, authenticated;
+grant execute on function public.dv_my_client_id() to authenticated;
+grant execute on function public.dv_update_my_profile(text, text, text, text) to authenticated;
 
 -- ---------- Row Level Security ----------
 do $$
@@ -275,6 +336,16 @@ create policy "public read" on public.dv_testimonials for select using (approved
 drop policy if exists "public insert" on public.dv_bookings;
 create policy "public insert" on public.dv_bookings for insert
   with check (status = 'new' and stage = 'not_started' and admin_notes is null and quoted_amount is null);
+
+-- signed-in clients see only their own records (drafts and internal notes stay private)
+drop policy if exists "client own" on public.dv_clients;
+create policy "client own" on public.dv_clients for select using (auth_user_id = auth.uid());
+drop policy if exists "client own" on public.dv_bookings;
+create policy "client own" on public.dv_bookings for select using (client_id is not null and client_id = public.dv_my_client_id());
+drop policy if exists "client own" on public.dv_invoices;
+create policy "client own" on public.dv_invoices for select using (client_id is not null and client_id = public.dv_my_client_id() and status <> 'draft');
+drop policy if exists "client own" on public.dv_payments;
+create policy "client own" on public.dv_payments for select using (client_id is not null and client_id = public.dv_my_client_id());
 drop policy if exists "public insert" on public.dv_inquiries;
 create policy "public insert" on public.dv_inquiries for insert with check (status = 'new');
 

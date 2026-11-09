@@ -11,6 +11,7 @@ const paths: Record<string, string> = {
     "M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z",
   linkedin:
     "M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3V9.5zm6.5 0h3.8v1.6h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.1c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4V9.5z",
+  x: "M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.3L5.3 21H2.2l7.2-8.3L1.8 3h6.4l4.4 5.8L17.8 3zm-1.1 16.2h1.7L7.3 4.7H5.5l11.2 14.5z",
   whatsapp:
     "M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.2-.1-1-.4-2-1.2-.7-.7-1.2-1.5-1.4-1.7-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2s1 2.6 1.1 2.8c.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.6-.3z",
 };
@@ -23,17 +24,40 @@ export function SocialIcon({ name, className = "size-5" }: { name: keyof typeof 
   );
 }
 
-export function SocialLinks({ settings, className = "" }: { settings: Settings; className?: string }) {
-  const items = (["instagram", "facebook", "tiktok", "youtube", "linkedin"] as const)
-    .map((k) => ({ k, url: settings[k] }))
-    .filter((x) => x.url);
+export const SOCIALS = [
+  { key: "instagram", label: "Instagram", color: "#E1306C" },
+  { key: "tiktok", label: "TikTok", color: "#25F4EE" },
+  { key: "facebook", label: "Facebook", color: "#1877F2" },
+  { key: "youtube", label: "YouTube", color: "#FF0000" },
+  { key: "linkedin", label: "LinkedIn", color: "#0A66C2" },
+  { key: "x", label: "X", color: "#ffffff" },
+] as const;
+
+/** Social profiles that have a URL set in Admin → Settings (never invented). */
+export function activeSocials(settings: Settings) {
+  return SOCIALS.map((s) => ({ ...s, url: settings[s.key] })).filter((s): s is typeof s & { url: string } => Boolean(s.url));
+}
+
+/** "@handle" from a profile URL, for display. */
+export function handleFrom(url: string) {
+  try {
+    const seg = new URL(url).pathname.split("/").filter(Boolean);
+    const h = (seg[0] === "in" || seg[0] === "company" || seg[0] === "c" ? seg[1] : seg[0]) ?? "";
+    return h ? (h.startsWith("@") ? h : `@${h}`) : new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+export function SocialLinks({ settings, className = "", size = "md" }: { settings: Settings; className?: string; size?: "sm" | "md" }) {
+  const items = activeSocials(settings);
   if (!items.length) return null;
   return (
-    <div className={`flex gap-3 ${className}`}>
-      {items.map(({ k, url }) => (
-        <a key={k} href={url!} target="_blank" rel="noopener noreferrer" aria-label={k}
-          className="grid size-10 place-items-center border border-white/15 text-white/70 transition hover:border-gold hover:text-gold">
-          <SocialIcon name={k} className="size-4" />
+    <div className={`flex flex-wrap gap-3 ${className}`}>
+      {items.map(({ key, label, url }) => (
+        <a key={key} href={url} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}
+          className={`grid place-items-center border border-white/15 text-white/70 transition hover:-translate-y-0.5 hover:border-gold hover:text-gold ${size === "sm" ? "size-9" : "size-10"}`}>
+          <SocialIcon name={key} className="size-4" />
         </a>
       ))}
     </div>

@@ -18,6 +18,7 @@ export type Settings = {
   tiktok: string | null;
   youtube: string | null;
   linkedin: string | null;
+  x: string | null;
   founded: string;
   hero_video_url: string | null;
   hero_video_mobile_url: string | null;

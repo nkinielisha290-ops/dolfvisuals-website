@@ -69,6 +69,24 @@ Ulinzi: Row Level Security. Wageni wanaweza kusoma content na kutuma booking tu.
 
 Tables zote zina kiambishi `dv_`, kwa hiyo database hii inaweza kukaa kwenye Supabase project moja na mifumo mingine.
 
+## Akaunti za wateja — `/account`
+
+- **Kujisajili:** `/account/register` (jina, simu, email, nenosiri). Mteja anapokea email ya kuthibitisha, kisha anaingia `/account/login`. Kuna "Forgot password" (`/account/forgot`).
+- **Portal ya mteja:** booking zake zote na hatua ya kazi (progress bar), namba ya kumbukumbu, kitufe cha kupakua kazi ikiwa tayari (link ya deliverables kutoka admin), invoice zake (kuona / kuchapisha / PDF), malipo yake, na kubadilisha taarifa na nenosiri.
+- **Kuunganisha na CRM:** akaunti ikithibitishwa, inaunganishwa na mteja aliyepo mwenye email ileile, au inaunda mteja mpya. Booking anazoweka akiwa ameingia zinaingia kwenye akaunti yake moja kwa moja, na fomu inajazwa taarifa zake.
+- **Usalama (RLS):** mteja anaona rekodi zake tu. Invoice za "draft" na notes za ndani za admin hazionekani kwake.
+- **Supabase → Authentication → URL Configuration:** weka *Site URL* = domain ya website, na *Redirect URLs* = `https://<domain>/auth/callback`.
+- Bila Supabase, kurasa hizi zinaonyesha ujumbe wa "coming soon" pamoja na vitufe vya booking na WhatsApp.
+
+## Social media
+
+Admin → Settings: Instagram, TikTok, Facebook, YouTube, LinkedIn na X. Zinaonekana kwenye footer, menu ya simu, Contact, na sehemu ya "Follow our work" kwenye Home. Link ambayo haijawekwa haionyeshwi.
+
+## Chatbot
+
+Msaidizi wa kuchat (kona ya chini kushoto), kwa Kiingereza na Kiswahili. Anajibu kuhusu huduma, bei/packages, booking, mahali, mawasiliano, akaunti, malipo na muda wa kukabidhi, kwa kutumia data halisi ya website, na anampeleka mteja WhatsApp kwa maswali mengine.
+Si lazima: weka `ANTHROPIC_API_KEY` kwenye Vercel ili maswali ambayo hayapo kwenye FAQ yajibiwe na AI (Claude). AI inaruhusiwa kutumia taarifa za website tu, na haibuni bei wala tarehe.
+
 ## Brand
 
 Rangi: Black `#111111`, Gold `#D4AF37`, White, Grey `#777777`. Fonts: Bebas Neue, Montserrat, Poppins na Inter (self-hosted kupitia @fontsource). Logo: `public/brand/`.
@@ -76,7 +94,7 @@ Rangi: Black `#111111`, Gold `#D4AF37`, White, Grey `#777777`. Fonts: Bebas Neue
 ## Bado inasubiri kutoka kwa mteja
 
 - Bei rasmi za packages (sasa zinaonyesha "On request")
-- Social media links (Admin → Settings)
+- Social media links (Admin → Settings): Instagram, TikTok, Facebook, YouTube, LinkedIn, X
 - Team: majina, picha, vyeo
 - Testimonials halisi (zinaonekana kwenye website tu zikiwa zimewekwa "Approved")
 - Picha na video zaidi za portfolio

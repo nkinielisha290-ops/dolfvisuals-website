@@ -4,15 +4,23 @@ import Reveal from "@/components/Reveal";
 import Intro from "@/components/Intro";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import BackToTop from "@/components/motion/BackToTop";
-import { SocialIcon } from "@/components/SocialIcons";
+import { SocialIcon, activeSocials } from "@/components/SocialIcons";
 import { getDict, tr } from "@/lib/i18n";
+import { getAcc } from "@/lib/i18n-account";
 import { getLang } from "@/lib/lang";
-import { getSettings, waLink } from "@/lib/data";
+import { getPackages, getServices, getSettings, waLink } from "@/lib/data";
+import ChatWidget from "@/components/chat/ChatWidget";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLang();
   const t = getDict(lang);
-  const settings = await getSettings();
+  const [settings, services, packages] = await Promise.all([getSettings(), getServices(), getPackages()]);
+  const chatKB = {
+    lang,
+    services: services.map((x) => ({ slug: x.slug, title: tr(x, "title", lang), summary: tr(x, "summary", lang) })),
+    packages: packages.map((p) => ({ name: tr(p, "name", lang), price: p.price, note: tr(p, "price_note", lang) || null })),
+    phone: settings.phone, whatsapp: settings.whatsapp, email: settings.email, location: tr(settings, "location", lang),
+  };
   const nav = [
     { href: "/", label: t.nav_home },
     { href: "/about", label: t.nav_about },
@@ -36,14 +44,14 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     foundingDate: settings.founded,
     address: { "@type": "PostalAddress", addressLocality: "Dar es Salaam", addressCountry: "TZ" },
     slogan: tr(settings, "tagline", "en"),
-    sameAs: [settings.instagram, settings.facebook, settings.tiktok, settings.youtube, settings.linkedin].filter(Boolean),
+    sameAs: [settings.instagram, settings.facebook, settings.tiktok, settings.youtube, settings.linkedin, settings.x].filter(Boolean),
   };
 
   return (
     <div className="site">
       <Intro />
       <SmoothScroll />
-      <Header lang={lang} nav={nav} bookLabel={t.nav_book} themeLabels={lang === "sw" ? { light: "Mandhari nyeupe", dark: "Mandhari nyeusi" } : { light: "Light mode", dark: "Dark mode" }} />
+      <Header lang={lang} nav={nav} bookLabel={t.nav_book} accountLabel={getAcc(lang).account} socials={activeSocials(settings).map(({ key, label, url }) => ({ key, label, url }))} themeLabels={lang === "sw" ? { light: "Mandhari nyeupe", dark: "Mandhari nyeusi" } : { light: "Light mode", dark: "Dark mode" }} />
       <main className="grain">{children}</main>
       <div aria-hidden className="overflow-hidden border-t border-line py-10">
         <div className="flex w-max animate-[marquee_60s_linear_infinite] whitespace-nowrap font-display text-[clamp(4rem,12vw,10rem)] leading-none tracking-wide">
@@ -61,6 +69,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         className="fixed bottom-5 right-5 z-40 grid size-14 place-items-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/40 transition hover:scale-105">
         <SocialIcon name="whatsapp" className="size-7" />
       </a>
+      <ChatWidget kb={chatKB} ai={Boolean(process.env.ANTHROPIC_API_KEY)} />
       <BackToTop label={lang === "sw" ? "Rudi juu" : "Back to top"} />
       <Reveal />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

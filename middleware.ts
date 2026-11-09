@@ -25,7 +25,21 @@ export async function middleware(request: NextRequest) {
     to.pathname = "/admin/login";
     return NextResponse.redirect(to);
   }
+  // client portal: everything under /account needs a session except the sign-in / sign-up pages
+  const open = ["/account/login", "/account/register", "/account/forgot"];
+  if ((path === "/account" || path.startsWith("/account/") || path.startsWith("/invoice/")) && !open.includes(path) && !data.user) {
+    const to = request.nextUrl.clone();
+    to.pathname = "/account/login";
+    to.search = `?next=${encodeURIComponent(path)}`;
+    return NextResponse.redirect(to);
+  }
+  if ((path === "/account/login" || path === "/account/register") && data.user) {
+    const to = request.nextUrl.clone();
+    to.pathname = "/account";
+    to.search = "";
+    return NextResponse.redirect(to);
+  }
   return response;
 }
 
-export const config = { matcher: ["/admin/:path*"] };
+export const config = { matcher: ["/admin/:path*", "/account", "/account/:path*", "/invoice/:path*", "/auth/:path*"] };

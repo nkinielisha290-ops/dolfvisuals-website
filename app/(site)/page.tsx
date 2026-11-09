@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SocialSection from "@/components/SocialSection";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Highlights from "@/components/Highlights";
@@ -248,6 +249,8 @@ export default async function Home() {
       )}
 
       <Highlights items={highlights} lang={lang} />
+
+      <SocialSection settings={settings} lang={lang} />
 
       {/* ================= CTA ================= */}
       <section className="theme-dark relative isolate overflow-hidden">
