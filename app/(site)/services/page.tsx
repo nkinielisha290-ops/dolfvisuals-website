@@ -29,7 +29,7 @@ export default async function Services() {
               </div>
               <div className="reveal-img relative hidden aspect-[4/3] overflow-hidden bg-ink-2 md:block">
                 {s.cover_url ? (
-                  <Image src={s.cover_url} alt="" fill sizes="240px" className="object-cover opacity-70 transition duration-700 group-hover:scale-105 group-hover:opacity-100" />
+                  <Image src={s.cover_url} alt="" fill sizes="240px" className="object-cover transition duration-700 group-hover:scale-105" />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src="/brand/icon-gold.svg" alt="" className="absolute inset-0 m-auto w-1/3 opacity-30" />

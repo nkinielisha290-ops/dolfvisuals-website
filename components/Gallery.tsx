@@ -75,7 +75,7 @@ export default function Gallery({ items, allLabel, closeLabel, filter = true, in
             <Image src={it.src} alt={it.title} width={it.w} height={it.h}
               sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
               className="h-auto w-full transition duration-700 group-hover:scale-[1.04]" />
-            <span className="absolute inset-0 bg-gradient-to-t from-ink/85 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
+            <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
             <span className="absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
               <span className="eyebrow !text-[0.6rem]">{it.categoryLabel}</span>
               <span className="mt-1 block font-sub text-sm text-white">{it.title}</span>

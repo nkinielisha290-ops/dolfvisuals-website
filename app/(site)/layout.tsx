@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import Intro from "@/components/Intro";
 import SmoothScroll from "@/components/motion/SmoothScroll";
-import Cursor from "@/components/motion/Cursor";
 import BackToTop from "@/components/motion/BackToTop";
 import { SocialIcon } from "@/components/SocialIcons";
 import { getDict, tr } from "@/lib/i18n";
@@ -44,7 +43,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <div className="site">
       <Intro />
       <SmoothScroll />
-      <Cursor />
       <Header lang={lang} nav={nav} bookLabel={t.nav_book} themeLabels={lang === "sw" ? { light: "Mandhari nyeupe", dark: "Mandhari nyeusi" } : { light: "Light mode", dark: "Dark mode" }} />
       <main className="grain">{children}</main>
       <div aria-hidden className="overflow-hidden border-t border-line py-10">

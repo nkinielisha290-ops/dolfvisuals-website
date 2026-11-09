@@ -8,9 +8,9 @@ export default async function PageHero({ eyebrow, title, text, page }: { eyebrow
   return (
     <section className="theme-dark relative isolate flex min-h-[72svh] items-end overflow-hidden border-b border-line pb-20 pt-36 sm:min-h-[78svh] sm:pb-24">
       <BgVideo src={reel.src} srcMobile={reel.srcMobile} poster={reel.poster} className="-z-20 [&_video]:scale-105" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/70 to-ink/40" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/80 via-ink/30 to-transparent" />
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-8">
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/40 via-black/5 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />
+      <div className="text-shadow-hero mx-auto w-full max-w-7xl px-4 sm:px-8">
         <p className="eyebrow eyebrow-line in animate-fadeup">{eyebrow}</p>
         <h1 className="mt-5 max-w-4xl font-display text-6xl leading-[0.9] tracking-wide text-white sm:text-7xl md:text-8xl lg:text-9xl">
           {title.split(" ").map((w, i) => (
