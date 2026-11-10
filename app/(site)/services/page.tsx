@@ -27,7 +27,7 @@ export default async function Services() {
                 <p className="mt-3 max-w-2xl leading-relaxed text-white/55">{tr(s, "description", lang)}</p>
                 <span className="mt-5 inline-flex items-center gap-2 font-sub text-sm text-gold">{t.learn_more} <ArrowRight className="size-4 transition group-hover:translate-x-1" /></span>
               </div>
-              <div className="reveal-img relative hidden aspect-[4/3] overflow-hidden bg-ink-2 md:block">
+              <div className="reveal-img relative hidden aspect-[4/3] overflow-hidden rounded-2xl bg-ink-2 md:block">
                 {s.cover_url ? (
                   <Image src={s.cover_url} alt="" fill sizes="240px" className="object-cover transition duration-700 group-hover:scale-105" />
                 ) : (

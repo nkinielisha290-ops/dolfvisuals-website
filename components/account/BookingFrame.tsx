@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { CalendarDays, Camera, ClipboardList, Download, Eye, Inbox, MapPin, PackageCheck, Scissors, Wallet } from "lucide-react";
 import { STAGES, tzs } from "@/lib/crm";
 import type { AccDict } from "@/lib/i18n-account";
@@ -5,21 +6,26 @@ import type { Booking } from "@/lib/types";
 
 const STAGE_ICONS = [Inbox, ClipboardList, Camera, Scissors, Eye, PackageCheck];
 
-/** A booking printed as a frame on a strip of film, with the production stages underneath. */
-export default function BookingFrame({ b, n, a, service, lang }: { b: Booking; n: number; a: AccDict; service: string; lang: string }) {
+/** A booking card: the service photo, details and the production stages. */
+export default function BookingFrame({ b, n, a, service, lang, image }: { b: Booking; n: number; a: AccDict; service: string; lang: string; image?: string | null }) {
   const step = Math.max(0, STAGES.findIndex(([k]) => k === b.stage));
   const cancelled = b.status === "cancelled";
   const pct = (step / (STAGES.length - 1)) * 100;
   const date = b.event_date ? new Date(b.event_date).toLocaleDateString(lang === "sw" ? "sw-TZ" : "en-GB", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) : "—";
 
   return (
-    <article className="theme-dark sprockets reveal relative overflow-hidden rounded-xl bg-[#0b0b0b] px-5 py-9 text-white ring-1 ring-white/5 sm:px-8">
-      <div className="relative rounded-md bg-gradient-to-br from-[#1b1b1b] to-[#121212] p-5 ring-1 ring-white/5 sm:p-7">
+    <article className="reveal relative grid overflow-hidden rounded-[1.75rem] border border-line bg-ink-2 md:grid-cols-[220px_1fr]">
+      {image && (
+        <div className="relative h-44 md:h-auto">
+          <Image src={image} alt="" fill sizes="(min-width:768px) 220px, 100vw" className="object-cover object-[50%_30%]" />
+        </div>
+      )}
+      <div className="relative p-5 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-3 font-sub text-[0.65rem] uppercase tracking-[0.25em] text-white/45">
-          <span>{a.frame} {String(n).padStart(2, "0")} · {a.ref} <span className="text-gold">{b.reference ?? "—"}</span></span>
+          <span>#{String(n).padStart(2, "0")} · {a.ref} <span className="text-gold">{b.reference ?? "—"}</span></span>
           <span className="flex items-center gap-2">
             {b.request_type === "quote" && <span className="border border-gold/40 px-1.5 py-0.5 text-gold">{a.quote}</span>}
-            <span className={`rounded-full px-2.5 py-1 ${cancelled ? "bg-red-500/15 text-red-300" : b.stage === "delivered" ? "bg-emerald-500/15 text-emerald-300" : "bg-gold/15 text-gold"}`}>
+            <span className={`rounded-full px-2.5 py-1 ${cancelled ? "bg-red-500/15 text-red-300" : b.stage === "delivered" ? "bg-emerald-500/15 text-emerald-600" : "bg-gold/15 text-gold"}`}>
               {a.statuses[b.status] ?? b.status}
             </span>
           </span>
@@ -41,7 +47,7 @@ export default function BookingFrame({ b, n, a, service, lang }: { b: Booking; n
                   const done = i < step, now = i === step;
                   return (
                     <li key={k} className="flex flex-col items-center text-center" aria-current={now ? "step" : undefined}>
-                      <span className={`relative grid size-8 place-items-center rounded-full transition sm:size-10 ${now ? "bg-gold text-[#111] shadow-[0_0_0_6px_rgba(212,175,55,.18)]" : done ? "bg-gold/90 text-[#111]" : "bg-[#222] text-white/35 ring-1 ring-white/10"}`}>
+                      <span className={`relative grid size-8 place-items-center rounded-full transition sm:size-10 ${now ? "bg-gold text-[#111] shadow-[0_0_0_6px_rgba(212,175,55,.18)]" : done ? "bg-gold/90 text-[#111]" : "bg-ink text-white/35 ring-1 ring-line"}`}>
                         <Icon className="size-3.5 sm:size-4" />
                         {now && <span aria-hidden className="absolute inset-0 animate-ping rounded-full bg-gold/30 [animation-duration:2.4s]" />}
                       </span>

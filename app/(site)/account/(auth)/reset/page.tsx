@@ -8,5 +8,5 @@ export const metadata: Metadata = { title: "Set a new password", robots: { index
 
 export default async function Reset() {
   const a = getAcc(await getLang());
-  return <AuthShell a={a} title={a.reset_title} text={a.password_hint} reel="corporate"><ResetForm a={a} /></AuthShell>;
+  return <AuthShell a={a} title={a.reset_title} text={a.password_hint} offset={7}><ResetForm a={a} /></AuthShell>;
 }

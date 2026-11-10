@@ -51,7 +51,7 @@ export function Password({ name, autoComplete, label, hint, meter, a }: {
       {meter && a && val && (
         <span className="mt-2 flex items-center gap-3" aria-live="polite">
           <span className="grid flex-1 grid-cols-4 gap-1">
-            {[1, 2, 3, 4].map((n) => <span key={n} className={`h-1 transition-colors duration-300 ${score >= n ? colors[score] : "bg-white/10"}`} />)}
+            {[1, 2, 3, 4].map((n) => <span key={n} className={`h-1 transition-colors duration-300 ${score >= n ? colors[score] : "bg-[#fff]/10"}`} />)}
           </span>
           <span className="w-20 text-right text-xs text-white/55">{a.strength[score]}</span>
         </span>
@@ -110,7 +110,7 @@ function GooglePending({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending}
-      className="flex w-full items-center justify-center gap-3 rounded-full bg-white px-5 py-3.5 font-sub text-sm font-semibold text-[#1f1f1f] shadow-sm ring-1 ring-black/10 transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-70">
+      className="flex w-full items-center justify-center gap-3 rounded-full bg-[#fff] px-5 py-3.5 font-sub text-sm font-semibold text-[#1f1f1f] shadow-sm ring-1 ring-black/10 transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-70">
       {pending ? <Loader2 className="size-5 animate-spin" /> : (
         <svg viewBox="0 0 48 48" className="size-5" aria-hidden>
           <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
@@ -136,7 +136,7 @@ export function GoogleButton({ a, next }: { a: AccDict; next?: string }) {
 function Divider({ label }: { label: string }) {
   return (
     <div className="my-7 flex items-center gap-4 font-sub text-[0.65rem] uppercase tracking-[0.3em] text-white/40">
-      <span className="h-px flex-1 bg-white/10" />{label}<span className="h-px flex-1 bg-white/10" />
+      <span className="h-px flex-1 bg-[#fff]/10" />{label}<span className="h-px flex-1 bg-[#fff]/10" />
     </div>
   );
 }

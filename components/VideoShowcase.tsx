@@ -22,7 +22,7 @@ export default function VideoShowcase({ films }: { films: Film[] }) {
   const direct = !src;
   return (
     <div>
-      <div className="theme-dark relative aspect-video w-full overflow-hidden bg-black">
+      <div className="theme-dark relative aspect-video w-full overflow-hidden rounded-2xl bg-black">
         {playing ? (
           direct ? (
             <video key={f.url} src={f.url} controls autoPlay playsInline className="size-full object-contain" />
@@ -48,7 +48,7 @@ export default function VideoShowcase({ films }: { films: Film[] }) {
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {films.map((x, k) => (
             <button key={x.id} type="button" onClick={() => { setCur(k); setPlaying(true); }}
-              className={`group relative aspect-video overflow-hidden text-left ring-2 transition ${k === cur ? "ring-gold" : "ring-transparent hover:ring-white/30"}`}>
+              className={`group relative aspect-video overflow-hidden rounded-xl text-left ring-2 transition ${k === cur ? "ring-gold" : "ring-transparent hover:ring-white/30"}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={x.poster} alt="" className="size-full object-cover transition duration-700 group-hover:scale-105" />
               <span className="absolute inset-0 bg-black/30" />

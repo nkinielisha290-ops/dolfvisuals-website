@@ -1,44 +1,42 @@
 import Link from "next/link";
 import { Check, ShieldCheck } from "lucide-react";
-import BgVideo from "@/components/motion/BgVideo";
-import Viewfinder from "@/components/motion/Viewfinder";
-import { getSettings } from "@/lib/data";
+import Image from "next/image";
+import PhotoColumns from "@/components/gallery/PhotoColumns";
+import { getPortfolio } from "@/lib/data";
 import type { AccDict } from "@/lib/i18n-account";
-import { reelFor } from "@/lib/reels";
+import { photosFor, rotate } from "@/lib/photos";
 
 /**
- * Sign-in / sign-up frame. Left: the showreel running inside a camera viewfinder.
+ * Sign-in / sign-up frame. Left: a wall of DOLF VISUALS photos.
  * Right: the form printed on a "studio pass" ticket with notches and a perforation line.
  */
-export default async function AuthShell({ a, tab, title, text, reel = "studio", children }: {
-  a: AccDict; tab?: "signin" | "register"; title: string; text: string; reel?: string; children: React.ReactNode;
+export default async function AuthShell({ a, tab, title, text, offset = 0, children }: {
+  a: AccDict; tab?: "signin" | "register"; title: string; text: string; offset?: number; children: React.ReactNode;
 }) {
-  const settings = await getSettings();
-  const r = reelFor(reel, settings);
+  const photos = rotate(photosFor(await getPortfolio(), "account"), offset);
 
   return (
     <section className="relative isolate mx-auto grid min-h-[100svh] max-w-7xl items-center gap-10 px-4 pb-16 pt-28 sm:px-8 sm:pt-32 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
       <div aria-hidden className="absolute inset-0 -z-10 opacity-[0.06] [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px)] [background-size:calc(100%/6)_100%]" />
 
-      {/* viewfinder */}
-      <div className="theme-dark relative hidden animate-fadeup lg:block">
-        <div className="relative aspect-[4/5] max-h-[78svh] w-full overflow-hidden bg-black">
-          <BgVideo src={r.srcMobile ?? r.src} poster={r.posterMobile ?? r.poster} />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/20" />
-          <Viewfinder label={a.pass_label} />
-          <div className="absolute inset-x-0 bottom-0 z-10 p-10 pb-20">
-            <p className="font-display text-5xl uppercase leading-[0.9] tracking-wide text-white">Turning moments<br /><span className="text-gold">into art</span></p>
-            <ul className="mt-6 space-y-2.5">
-              {a.perks.map((p, i) => (
-                <li key={p} className="flex items-start gap-3 text-sm text-white/85 animate-fadeup" style={{ animationDelay: `${0.3 + i * 0.08}s` }}>
-                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-gold text-[#111]"><Check className="size-3" strokeWidth={3} /></span>{p}
-                </li>
-              ))}
-            </ul>
-          </div>
+      {/* photo wall */}
+      <div className="relative hidden h-[82svh] animate-fadeup lg:block">
+        <div className="h-full overflow-hidden rounded-[2rem] [mask-image:linear-gradient(to_bottom,transparent,#000_10%,#000_90%,transparent)]">
+          <PhotoColumns photos={photos} cols={2} className="h-full" speed={50} />
         </div>
-        <span aria-hidden className="absolute -left-3 -top-3 h-24 w-24 border-l border-t border-gold/60" />
-        <span aria-hidden className="absolute -bottom-3 -right-3 h-24 w-24 border-b border-r border-gold/60" />
+        <div className="absolute -bottom-2 left-6 right-6 rounded-[1.5rem] bg-[#fff]/95 p-6 text-[#111] shadow-2xl backdrop-blur">
+          <div className="flex items-center gap-4">
+            {photos[0] && <span className="relative size-14 shrink-0 overflow-hidden rounded-full ring-4 ring-[#d4af37]/40"><Image src={photos[0].src} alt="" fill sizes="56px" className="object-cover object-top" /></span>}
+            <p className="font-display text-3xl uppercase leading-[0.9] tracking-wide">Turning moments <span className="text-[#b8922a]">into art</span></p>
+          </div>
+          <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2">
+            {a.perks.map((p) => (
+              <li key={p} className="flex items-start gap-2 text-xs leading-snug text-black/70">
+                <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-[#d4af37] text-[#111]"><Check className="size-2.5" strokeWidth={3} /></span>{p}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {/* the pass */}

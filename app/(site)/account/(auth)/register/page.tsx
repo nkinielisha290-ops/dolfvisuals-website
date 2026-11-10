@@ -15,7 +15,7 @@ export default async function Register() {
   const a = getAcc(lang);
   const settings = await getSettings();
   return (
-    <AuthShell a={a} tab="register" title={a.register_title} text={a.register_text} reel="home">
+    <AuthShell a={a} tab="register" title={a.register_title} text={a.register_text} offset={4}>
       {hasSupabase ? <RegisterForm a={a} /> : <NotConfigured a={a} whatsapp={settings.whatsapp} bookLabel={getDict(lang).nav_book} />}
     </AuthShell>
   );

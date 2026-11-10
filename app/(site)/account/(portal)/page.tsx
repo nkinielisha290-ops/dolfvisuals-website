@@ -17,6 +17,7 @@ export default async function Overview() {
   const a = getAcc(lang);
   const [{ client, bookings, upcoming, totals, mfa }, services] = await Promise.all([getPortal(), getServices()]);
   if (!client) return null;
+  const coverFor = (slug: string | null) => services.find((x) => x.slug === slug)?.cover_url ?? null;
   const serviceName = (slug: string | null) => { const s = services.find((x) => x.slug === slug); return s ? tr(s, "title", lang) : slug ?? "—"; };
   const since = new Date(client.created_at).toLocaleDateString(lang === "sw" ? "sw-TZ" : "en-GB", { month: "short", year: "numeric" });
   const days = upcoming?.event_date ? Math.round((new Date(upcoming.event_date).getTime() - new Date(new Date().toISOString().slice(0, 10)).getTime()) / 86_400_000) : null;
@@ -34,7 +35,7 @@ export default async function Overview() {
         <StudioPass a={a} name={client.name} number={clientNo(client.id)} since={since} id={client.id} twoStep={mfa.length > 0} bookings={bookings.length} />
 
         {/* countdown */}
-        <div className="theme-dark sprockets relative flex flex-col justify-between overflow-hidden rounded-[22px] bg-[#0b0b0b] px-7 py-10 text-white animate-fadeup [animation-delay:.1s]">
+        <div className="relative flex flex-col justify-between overflow-hidden rounded-[22px] border border-line bg-ink-2 px-7 py-8 animate-fadeup [animation-delay:.1s]">
           <p className="flex items-center gap-2 font-sub text-[0.65rem] uppercase tracking-[0.3em] text-gold"><Hourglass className="size-4" />{a.next_shoot}</p>
           {upcoming ? (
             <>
@@ -76,7 +77,7 @@ export default async function Overview() {
           <h2 className="font-heading text-2xl font-bold">{a.latest}</h2>
           {bookings.length > 1 && <Link href="/account/bookings" className="u-link flex items-center gap-1 text-sm text-gold">{a.see_all} <ArrowRight className="size-4" /></Link>}
         </div>
-        {bookings[0] ? <BookingFrame b={bookings[0]} n={bookings.length} a={a} service={serviceName(bookings[0].service_slug)} lang={lang} /> : (
+        {bookings[0] ? <BookingFrame b={bookings[0]} n={bookings.length} a={a} service={serviceName(bookings[0].service_slug)} lang={lang} image={coverFor(bookings[0].service_slug)} /> : (
           <div className="flex flex-wrap items-center justify-between gap-4 border border-dashed border-line p-8">
             <p className="text-white/60">{a.no_bookings}</p>
             <Link href="/booking" className="btn-gold">{a.book_new}</Link>

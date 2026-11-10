@@ -25,7 +25,7 @@ export default async function Bookings() {
         </div>
       ) : (
         <div className="mt-8 space-y-6">
-          {bookings.map((b, i) => <BookingFrame key={b.id} b={b} n={bookings.length - i} a={a} service={serviceName(b.service_slug)} lang={lang} />)}
+          {bookings.map((b, i) => <BookingFrame key={b.id} b={b} n={bookings.length - i} a={a} service={serviceName(b.service_slug)} lang={lang} image={services.find((x) => x.slug === b.service_slug)?.cover_url} />)}
         </div>
       )}
     </section>

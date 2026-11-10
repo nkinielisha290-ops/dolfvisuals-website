@@ -35,7 +35,7 @@ export default function Header({ lang, nav, bookLabel, accountLabel, socials = [
   const active = (h: string) => (h === "/" ? path === "/" : path.startsWith(h));
 
   return (
-    <header className={`${!scrolled && !open && path === "/" ? "theme-dark" : ""} fixed inset-x-0 top-0 z-50 transition-all duration-500 ${hidden && !open ? "-translate-y-full" : ""} ${scrolled || open ? "bg-ink/90 backdrop-blur-md border-b border-white/5" : (path === "/" ? "bg-gradient-to-b from-black/30 to-transparent" : "bg-transparent")}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${hidden && !open ? "-translate-y-full" : ""} ${scrolled || open ? "bg-ink/90 backdrop-blur-md border-b border-white/5" : "bg-transparent"}`}>
       <span aria-hidden className="scroll-progress absolute inset-x-0 bottom-0 h-px origin-left bg-gold" />
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:h-20 sm:px-8">
         <Link href="/" aria-label="DOLF VISUALS — home" className="shrink-0">

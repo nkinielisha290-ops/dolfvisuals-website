@@ -52,7 +52,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Intro />
       <SmoothScroll />
       <Header lang={lang} nav={nav} bookLabel={t.nav_book} accountLabel={getAcc(lang).account} socials={activeSocials(settings).map(({ key, label, url }) => ({ key, label, url }))} themeLabels={lang === "sw" ? { light: "Mandhari nyeupe", dark: "Mandhari nyeusi" } : { light: "Light mode", dark: "Dark mode" }} />
-      <main className="grain">{children}</main>
+      <main>{children}</main>
       <div aria-hidden className="overflow-hidden border-t border-line py-10">
         <div className="flex w-max animate-[marquee_60s_linear_infinite] whitespace-nowrap font-display text-[clamp(4rem,12vw,10rem)] leading-none tracking-wide">
           {[0, 1].map((k) => (

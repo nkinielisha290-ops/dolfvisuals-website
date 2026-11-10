@@ -1,9 +1,11 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
+import Mosaic from "@/components/gallery/Mosaic";
 import Highlights from "@/components/Highlights";
 import SectionHead from "@/components/SectionHead";
-import { getDict, tr } from "@/lib/i18n";
+import Link from "next/link";
+import { categoryLabel, getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getHighlights, getPortfolio, getTeam } from "@/lib/data";
 
@@ -43,7 +45,7 @@ export default async function About() {
         image={portfolio[2]?.image_url} />
 
       <section className="mx-auto grid max-w-7xl gap-16 px-4 py-24 sm:px-8 md:py-32 lg:grid-cols-[1fr_1.1fr]">
-        <div className="reveal-img relative aspect-[4/5] overflow-hidden lg:sticky lg:top-28 lg:self-start">
+        <div className="reveal-img relative aspect-[4/5] overflow-hidden rounded-[1.75rem] lg:sticky lg:top-28 lg:self-start">
           <Image src={portfolio.find((p) => p.category === "commercial")?.image_url ?? portfolio[0].image_url} alt="" fill sizes="(min-width:1024px) 45vw, 100vw" className="object-cover" />
         </div>
         <div className="space-y-14">
@@ -88,6 +90,15 @@ export default async function About() {
         </div>
       </section>
 
+      {/* photo wall */}
+      <section className="mx-auto max-w-7xl px-4 pt-24 sm:px-8 md:pt-32">
+        <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+          <SectionHead eyebrow={t.portfolio_eyebrow} title={sw ? "Kutoka kwenye kamera yetu" : "Straight from our lens"} />
+          <Link href="/portfolio" className="btn-ghost">{t.portfolio_all}</Link>
+        </div>
+        <Mosaic items={portfolio.filter((p) => p.media_type !== "video").slice(0, 8).map((p) => ({ src: p.image_url, title: tr(p, "title", lang), label: categoryLabel(p.category, lang), href: `/portfolio?c=${p.category}`, w: p.width, h: p.height }))} />
+      </section>
+
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-8 md:py-32">
         <SectionHead eyebrow={t.team_eyebrow} title={t.team_title} />
         {team.length === 0 ? (
@@ -96,7 +107,7 @@ export default async function About() {
           <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {team.map((m) => (
               <article key={m.id} className="reveal group">
-                <div className="relative aspect-[4/5] overflow-hidden bg-ink-2">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink-2">
                   {m.photo_url && <Image src={m.photo_url} alt={m.name} fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" />}
                 </div>
                 <h3 className="mt-5 font-heading text-lg font-bold">{m.name}</h3>

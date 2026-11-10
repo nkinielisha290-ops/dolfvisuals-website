@@ -41,6 +41,9 @@
 @keyframes colup { from { transform: translateY(0); } to { transform: translateY(-33.333%); } }
 @keyframes coldown { from { transform: translateY(-33.333%); } to { transform: translateY(0); } }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes print-in { from { opacity: 0; transform: translateY(40px) rotate(0deg); } }
+.photo-cols:hover .photo-col, .photo-marquee:hover > div { animation-play-state: paused !important; }
+html[data-theme="light"] body { background: #f7f5f0; color: #141414; }
 
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
@@ -71,14 +74,14 @@ body {
   display: inline-flex; align-items: center; gap: .6rem;
   background: var(--color-gold); color: var(--color-on-gold);
   font-family: var(--font-sub); font-weight: 600; font-size: .9rem; letter-spacing: .04em;
-  padding: .95rem 1.6rem; transition: background .25s, transform .25s;
+  padding: .95rem 1.7rem; border-radius: 999px; transition: background .25s, transform .25s, box-shadow .25s;
 }
-.btn-gold:hover { background: var(--color-gold-soft); transform: translateY(-1px); }
+.btn-gold:hover { background: var(--color-gold-soft); transform: translateY(-1px); box-shadow: 0 12px 30px -12px var(--color-gold); }
 .btn-ghost {
   display: inline-flex; align-items: center; gap: .6rem;
   border: 1px solid color-mix(in srgb, var(--color-white) 35%, transparent); color: var(--color-white);
   font-family: var(--font-sub); font-weight: 500; font-size: .9rem; letter-spacing: .04em;
-  padding: .95rem 1.6rem; transition: border-color .25s, color .25s;
+  padding: .95rem 1.7rem; border-radius: 999px; transition: border-color .25s, color .25s, background .25s;
 }
 .btn-ghost:hover { border-color: var(--color-gold); color: var(--color-gold); }
 
@@ -233,17 +236,6 @@ html.theme-switching .site, html.theme-switching .site * {
 @media (min-width: 1024px) { .text-outline-hero span { -webkit-text-stroke-width: 3px; } }
 
 /* ================= Client portal: "Studio Pass" visual language ================= */
-/* film-strip sprocket holes along an edge */
-.sprockets { position: relative; }
-.sprockets::before, .sprockets::after {
-  content: ""; position: absolute; left: 0; right: 0; height: 14px; pointer-events: none;
-  background: repeating-linear-gradient(90deg, transparent 0 10px, var(--sprocket, rgba(255,255,255,.12)) 10px 22px, transparent 22px 32px);
-  -webkit-mask: linear-gradient(#000 0 0) center / 100% 6px no-repeat; mask: linear-gradient(#000 0 0) center / 100% 6px no-repeat;
-  border-radius: 2px;
-}
-.sprockets::before { top: 6px; } .sprockets::after { bottom: 6px; }
-@media (min-width: 1024px) { .portal-strip { background-image: repeating-linear-gradient(180deg, transparent 0 10px, rgba(212,175,55,.35) 10px 20px, transparent 20px 30px); background-size: 6px 100%; background-repeat: no-repeat; background-position: 8px 0; } }
-
 /* ticket notches on both sides of a perforation line, at --notch-y */
 .pass-notch {
   --notch-y: 92px;
@@ -280,8 +272,4 @@ html.theme-switching .site, html.theme-switching .site * {
 /* stage timeline line */
 .stage-track { background: linear-gradient(90deg, var(--color-gold) var(--p, 0%), rgba(255,255,255,.1) var(--p, 0%)); }
 html[data-theme="light"] .site .stage-track { background: linear-gradient(90deg, var(--color-gold) var(--p, 0%), rgba(0,0,0,.1) var(--p, 0%)); }
-html[data-theme="light"] .site .sprockets { --sprocket: rgba(0,0,0,.12); }
 html[data-theme="light"] .site .perforation { --perf: rgba(0,0,0,.2); }
-/* film cards stay dark in the light theme, so keep their light sprockets and track */
-html[data-theme="light"] .site .theme-dark.sprockets, html[data-theme="light"] .site .theme-dark .sprockets { --sprocket: rgba(255,255,255,.12); }
-html[data-theme="light"] .site .theme-dark .stage-track { background: linear-gradient(90deg, var(--color-gold) var(--p, 0%), rgba(255,255,255,.1) var(--p, 0%)); }

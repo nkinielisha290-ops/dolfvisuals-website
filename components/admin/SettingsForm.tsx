@@ -38,9 +38,8 @@ const groups: { title: string; fields: [keyof Settings, string, ("textarea" | "t
     ["phone", "Phone number"], ["whatsapp", "WhatsApp number (with country code, e.g. 255756506908)"],
     ["email", "Email"], ["location_en", "Location (English)"], ["location_sw", "Location (Kiswahili)"],
   ] },
-  { title: "Background video (showreel)", fields: [
-    ["hero_video_url", "Showreel video URL — desktop (MP4, landscape). Leave empty to use the built-in reels"],
-    ["hero_video_mobile_url", "Showreel video URL — phones (MP4, portrait, optional)"],
+  { title: "Showreel video (optional — shown in Portfolio → Films)", fields: [
+    ["hero_video_url", "Showreel video URL (MP4). Shown on the Portfolio page only when set"],
   ] },
   { title: "Social media links", fields: [
     ["instagram", "Instagram URL"], ["facebook", "Facebook URL"], ["tiktok", "TikTok URL"], ["youtube", "YouTube URL"], ["linkedin", "LinkedIn URL"], ["x", "X (Twitter) URL"],

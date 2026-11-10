@@ -1,35 +1,24 @@
 import Image from "next/image";
-import SocialSection from "@/components/SocialSection";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Sparkles } from "lucide-react";
 import Highlights from "@/components/Highlights";
 import SectionHead from "@/components/SectionHead";
+import SocialSection from "@/components/SocialSection";
 import TestimonialSlider from "@/components/TestimonialSlider";
 import { SocialIcon } from "@/components/SocialIcons";
-import BgVideo from "@/components/motion/BgVideo";
+import Mosaic from "@/components/gallery/Mosaic";
+import PhotoColumns from "@/components/gallery/PhotoColumns";
+import PhotoMarquee from "@/components/gallery/PhotoMarquee";
 import Counter from "@/components/motion/Counter";
-import HorizontalScroll from "@/components/motion/HorizontalScroll";
 import Magnetic from "@/components/motion/Magnetic";
-import RotatingBadge from "@/components/motion/RotatingBadge";
 import ScrollHighlight from "@/components/motion/ScrollHighlight";
 import SplitText from "@/components/motion/SplitText";
 import { CATEGORIES, categoryLabel, getDict, tr } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getHighlights, getPortfolio, getServices, getSettings, getTestimonials, waLink } from "@/lib/data";
-import { reelFor } from "@/lib/reels";
+import { photosFor, rotate } from "@/lib/photos";
 
 export const revalidate = 60;
-
-/** Editorial grid rhythm for featured work (12-col on desktop). */
-const LAYOUT = [
-  "lg:col-span-7 aspect-[4/5]",
-  "lg:col-span-5 aspect-[4/5] lg:mt-40",
-  "lg:col-span-4 aspect-[3/4]",
-  "lg:col-span-4 aspect-[3/4] lg:mt-24",
-  "lg:col-span-4 aspect-[3/4]",
-  "lg:col-span-5 aspect-[4/5] lg:-mt-10",
-  "lg:col-span-7 aspect-[5/4] lg:mt-24",
-];
 
 export default async function Home() {
   const lang = await getLang();
@@ -39,16 +28,17 @@ export default async function Home() {
     getSettings(), getServices(), getPortfolio(), getTestimonials(), getHighlights(),
   ]);
 
-  const featured = portfolio.filter((p) => p.featured);
-  const heroPool = (featured.length >= 6 ? featured : portfolio).slice(0, 9);
-  const bg = heroPool[0]?.image_url;
-  const reel = reelFor("home", settings);
+  const photos = photosFor(portfolio, "home", lang);
+  const pick = (i: number) => photos[i % Math.max(1, photos.length)];
+  const byCat = (cat: string, i = 0) => photos.filter((p) => p.category.startsWith(cat))[i] ?? pick(i);
+
+  // a bright, colourful frame for the photo set inside the headline
+  const inline = byCat("graduation");
   const title = tr(settings, "hero_title", lang);
-  // split the headline into 3 balanced lines: "Turning" / "moments" / "into art"
   const hw = title.split(" ");
   const heroLines = hw.length >= 3 ? [hw[0], hw[1], hw.slice(2).join(" ")] : [title];
-  const work = (featured.length ? featured : portfolio).slice(0, LAYOUT.length);
-  const img = (cat: string, i = 0) => portfolio.filter((p) => p.category.startsWith(cat))[i]?.image_url ?? portfolio[i]?.image_url;
+
+  const work = portfolio.filter((p) => p.media_type !== "video").sort((a, b) => Number(b.featured) - Number(a.featured) || a.sort - b.sort);
 
   const stats = [
     { n: services.length, label: sw ? "Huduma" : "Services" },
@@ -59,60 +49,77 @@ export default async function Home() {
 
   return (
     <>
-      {/* ================= HERO ================= */}
-      <section className="theme-dark relative isolate flex min-h-[100svh] flex-col overflow-hidden">
-        <BgVideo src={reel.src} srcMobile={reel.srcMobile} poster={reel.poster ?? bg} className="-z-20"
-          toggle toggleClassName="absolute right-4 top-24 z-10 sm:right-8 sm:top-28" labels={sw ? { pause: "Simamisha video", play: "Cheza video" } : undefined} />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
+      {/* ================= HERO: words + drifting photo columns ================= */}
+      <section className="relative isolate overflow-hidden pt-24 sm:pt-28">
+        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[40rem] rounded-full bg-gold/15 blur-3xl" />
+        <div className="mx-auto grid max-w-[96rem] items-center gap-10 px-4 sm:px-8 lg:min-h-[calc(100svh-7rem)] lg:grid-cols-[1.05fr_1fr] lg:gap-12">
+          <div className="py-8 lg:py-16">
+            <p className="inline-flex animate-fadeup items-center gap-2 rounded-full border border-line bg-ink-2/70 px-4 py-2 font-sub text-[0.7rem] uppercase tracking-[0.2em] text-white/70 backdrop-blur [animation-delay:.1s]">
+              <Sparkles className="size-3.5 text-gold" /> Photography · Videography · Creative Agency
+            </p>
 
-        <div className="text-shadow-hero mx-auto flex w-full max-w-[96rem] flex-1 flex-col justify-end px-4 pb-8 pt-32 sm:px-8 lg:pb-10">
-          <p className="eyebrow animate-fadeup [animation-delay:.2s]">
-            <span className="mr-3 inline-flex items-center gap-2 border border-white/30 px-2.5 py-1 align-middle text-[0.6rem] tracking-[0.25em] backdrop-blur-sm">
-              <span className="relative flex size-1.5"><span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500" /><span className="relative inline-flex size-1.5 rounded-full bg-red-500" /></span>
-              Showreel
-            </span>
-            Photography · Videography · Creative Agency
-          </p>
+            <h1 aria-label={title} className="mt-7 font-display text-[clamp(3.6rem,7.6vw,8.6rem)] uppercase leading-[0.86] tracking-[0.01em] text-white">
+              {heroLines.map((line, li) => (
+                <span key={li} className="block">
+                  {line.split(" ").map((w, i, arr) => (
+                    <span key={i} className="word mr-[0.2em] last:mr-0">
+                      <span className={li === heroLines.length - 1 && i === arr.length - 1 ? "text-gold" : ""} style={{ animationDelay: `${0.2 + li * 0.13 + i * 0.06}s` }}>{w}</span>
+                    </span>
+                  ))}
+                  {/* a photo set inline in the headline, like a magazine cover */}
+                  {li === 0 && pick(1) && (
+                    <span aria-hidden className="relative ml-[0.15em] inline-block h-[0.72em] w-[1.5em] translate-y-[0.04em] overflow-hidden rounded-full align-baseline ring-4 ring-gold/30 animate-fadeup [animation-delay:.6s]">
+                      <Image src={inline.src} alt="" fill sizes="200px" className="object-cover object-[50%_25%]" priority />
+                    </span>
+                  )}
+                </span>
+              ))}
+            </h1>
 
-          <h1 aria-label={title} className="mt-6 font-display text-[clamp(4.2rem,13.5vw,14rem)] uppercase leading-[0.82] tracking-[0.01em] text-white">
-            {heroLines.map((line, li) => (
-              <span key={li} className={`block ${li === 1 ? "text-outline-hero pl-[8vw]" : ""} ${li === heroLines.length - 1 ? "text-right sm:text-left sm:pl-[22vw]" : ""}`}>
-                {line.split(" ").map((w, i) => (
-                  <span key={i} className="word mr-[0.2em] last:mr-0">
-                    <span className={`${li === heroLines.length - 1 && i === line.split(" ").length - 1 ? "text-gold" : ""}`}
-                      style={{ animationDelay: `${0.3 + li * 0.14 + i * 0.06}s` }}>{w}</span>
-                  </span>
-                ))}
-              </span>
-            ))}
-          </h1>
-
-          <div className="mt-10 grid items-end gap-8 border-t border-white/25 pt-8 animate-fadeup [animation-delay:1s] md:grid-cols-[1fr_auto] lg:grid-cols-[1.1fr_1fr_auto]">
-            <p className="max-w-md text-base leading-relaxed text-white/85 sm:text-lg">{tr(settings, "hero_subtitle", lang)}</p>
-            <div className="flex flex-wrap gap-3 lg:justify-center">
+            <p className="mt-8 max-w-xl animate-fadeup text-lg leading-relaxed text-white/65 [animation-delay:.7s]">{tr(settings, "hero_subtitle", lang)}</p>
+            <div className="mt-9 flex flex-wrap gap-3 animate-fadeup [animation-delay:.85s]">
               <Magnetic><Link href="/portfolio" className="btn-gold">{t.hero_cta_work} <ArrowRight className="size-4" /></Link></Magnetic>
               <Magnetic><Link href="/booking" className="btn-ghost">{t.hero_cta_book}</Link></Magnetic>
             </div>
-            <RotatingBadge href="#work" label={t.scroll} className="hidden md:mr-16 md:grid"
-              text={`DOLF VISUALS • EST. 2025 • ${tr(settings, "location", lang).split(",")[0].toUpperCase()} • `} />
+
+            <div className="mt-12 flex items-center gap-4 animate-fadeup [animation-delay:1s]">
+              <div className="flex -space-x-3">
+                {[2, 3, 4, 5].map((k) => pick(k) && (
+                  <span key={k} className="relative size-11 overflow-hidden rounded-full ring-[3px] ring-ink"><Image src={pick(k).src} alt="" fill sizes="44px" className="object-cover object-top" /></span>
+                ))}
+              </div>
+              <p className="text-sm leading-snug text-white/60">
+                {sw ? "Harusi · Picha binafsi · Kampuni · Matukio" : "Weddings · Portraits · Corporate · Events"}<br />
+                <span className="text-white/40">{tr(settings, "location", lang)}</span>
+              </p>
+            </div>
           </div>
+
+          {/* desktop: moving columns */}
+          <div className="relative hidden h-[calc(100svh-7rem)] lg:block [mask-image:linear-gradient(to_bottom,transparent,#000_12%,#000_88%,transparent)]">
+            <PhotoColumns photos={photos} cols={3} className="h-full" speed={55} />
+          </div>
+        </div>
+        {/* phones & tablets: two ribbons */}
+        <div className="space-y-3 pb-6 lg:hidden">
+          <PhotoMarquee photos={photos} height="h-56 sm:h-72" speed={55} />
+          <PhotoMarquee photos={rotate(photos, 5)} height="h-56 sm:h-72" speed={65} reverse />
         </div>
       </section>
 
       {/* ================= TICKER ================= */}
-      <div className="overflow-hidden border-y border-line bg-ink-2 py-5" aria-hidden>
+      <div className="relative z-10 -rotate-1 overflow-hidden bg-gold py-4 text-on-gold shadow-lg" aria-hidden>
         <div className="flex w-max animate-[marquee_45s_linear_infinite] gap-10 whitespace-nowrap">
           {[...services, ...services].map((s, i) => (
-            <span key={i} className="flex items-center gap-10 font-display text-3xl tracking-[0.08em] text-white/80 sm:text-4xl">
-              {tr(s, "title", lang)} <span className="text-gold">✦</span>
+            <span key={i} className="flex items-center gap-10 font-display text-3xl tracking-[0.08em] sm:text-4xl">
+              {tr(s, "title", lang)} <span>✦</span>
             </span>
           ))}
         </div>
       </div>
 
       {/* ================= STATEMENT ================= */}
-      <section className="mx-auto max-w-7xl px-4 py-28 sm:px-8 md:py-40">
+      <section className="mx-auto max-w-7xl px-4 py-28 sm:px-8 md:py-36">
         <p className="eyebrow eyebrow-line">{t.mission}</p>
         <ScrollHighlight
           className="mt-10 font-heading text-[clamp(1.9rem,4.6vw,4.2rem)] font-bold leading-[1.12] tracking-tight"
@@ -122,21 +129,24 @@ export default async function Home() {
             : "We capture, create and deliver exceptional visual stories — through professional photography, cinematic videography and creative media."} />
       </section>
 
-      {/* ================= ABOUT + STATS ================= */}
-      <section className="mx-auto grid max-w-7xl items-center gap-14 px-4 pb-24 sm:px-8 md:pb-32 lg:grid-cols-2">
-        <div className="relative">
-          <div className="reveal-img img-hover relative aspect-[4/5] w-4/5 overflow-hidden" data-cursor="Story">
-            <Image src={img("wedding")} alt="" fill sizes="(min-width:1024px) 40vw, 80vw" className="object-cover" />
+      {/* ================= ABOUT: photo collage + story ================= */}
+      <section className="mx-auto grid max-w-7xl items-center gap-14 px-4 pb-28 sm:px-8 md:pb-36 lg:grid-cols-2">
+        <div className="relative grid grid-cols-[1.25fr_1fr] gap-3 sm:gap-4">
+          <div className="reveal-img relative row-span-2 aspect-[3/4] overflow-hidden rounded-[1.75rem] sm:aspect-auto">
+            <Image src={byCat("wedding").src} alt={byCat("wedding").alt} fill sizes="(min-width:1024px) 28vw, 55vw" className="object-cover transition-transform duration-1000 hover:scale-105" />
           </div>
-          <div className="reveal-img img-hover absolute -bottom-10 right-0 aspect-[4/5] w-1/2 overflow-hidden border-8 border-ink [transition-delay:.25s]">
-            <Image src={img("commercial")} alt="" fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover" />
+          <div className="reveal-img relative aspect-square overflow-hidden rounded-[1.75rem] [transition-delay:.15s]">
+            <Image src={byCat("commercial", 1).src} alt={byCat("commercial", 1).alt} fill sizes="(min-width:1024px) 22vw, 45vw" className="object-cover object-top transition-transform duration-1000 hover:scale-105" />
           </div>
-          <div className="reveal absolute -left-2 top-8 bg-gold px-4 py-3 text-on-gold sm:-left-4">
-            <p className="font-display text-4xl leading-none">2025</p>
+          <div className="reveal-img relative aspect-[4/5] overflow-hidden rounded-[1.75rem] [transition-delay:.3s]">
+            <Image src={byCat("graduation").src} alt={byCat("graduation").alt} fill sizes="(min-width:1024px) 22vw, 45vw" className="object-cover transition-transform duration-1000 hover:scale-105" />
+          </div>
+          <div className="reveal absolute -bottom-6 left-6 rounded-2xl bg-gold px-5 py-4 text-on-gold shadow-xl sm:left-10">
+            <p className="font-display text-5xl leading-none">2025</p>
             <p className="font-sub text-[0.6rem] uppercase tracking-[0.2em]">{t.founded}</p>
           </div>
         </div>
-        <div className="mt-8 lg:mt-0">
+        <div className="mt-6 lg:mt-0">
           <SectionHead eyebrow={t.about_eyebrow} title={t.about_title} />
           <p className="reveal mt-6 text-lg leading-relaxed text-white/65">
             {sw
@@ -146,92 +156,86 @@ export default async function Home() {
           <Link href="/about" className="reveal group mt-8 inline-flex items-center gap-2 font-sub text-sm text-gold">
             <span className="u-link">{t.about_more}</span> <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </Link>
-          <dl className="mt-14 grid grid-cols-2 gap-px bg-line sm:grid-cols-4">
+          <dl className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {stats.map((s, i) => (
-              <div key={s.label} className="reveal bg-ink py-6 pr-4" style={{ transitionDelay: `${i * 80}ms` }}>
-                <dt className="font-display text-5xl leading-none text-white"><Counter to={s.n} from={s.n > 100 ? s.n - 25 : 0} duration={1600} /></dt>
-                <dd className="mt-2 font-sub text-[0.65rem] uppercase tracking-[0.2em] text-white/45">{s.label}</dd>
+              <div key={s.label} className="reveal rounded-2xl border border-line bg-ink-2 p-5" style={{ transitionDelay: `${i * 80}ms` }}>
+                <dt className="font-display text-4xl leading-none text-white"><Counter to={s.n} from={s.n > 100 ? s.n - 25 : 0} duration={1600} /></dt>
+                <dd className="mt-2 font-sub text-[0.6rem] uppercase tracking-[0.18em] text-white/45">{s.label}</dd>
               </div>
             ))}
           </dl>
         </div>
       </section>
 
-      {/* ================= SERVICES (horizontal pinned) ================= */}
-      <section className="border-y border-line bg-ink-2">
-        <HorizontalScroll header={
-          <div className="mx-auto mb-12 flex w-full max-w-7xl flex-wrap items-end justify-between gap-6 px-4 sm:px-8">
+      {/* ================= SERVICES: picture cards ================= */}
+      <section className="bg-ink-2 py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8">
+          <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
             <SectionHead eyebrow={t.services_eyebrow} title={t.services_title} />
             <Link href="/services" className="reveal group inline-flex items-center gap-2 font-sub text-sm text-gold">
               <span className="u-link">{t.services_all}</span> <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
-        }>
-          {services.map((s, i) => (
-            <Link key={s.id} href={`/services/${s.slug}`} data-cursor={sw ? "Fungua" : "Explore"}
-              className="theme-dark card-shine img-hover group relative flex aspect-[3/4] w-[78vw] shrink-0 snap-start flex-col justify-between overflow-hidden border border-white/10 bg-ink p-7 sm:w-[44vw] lg:w-[min(28vw,420px)]">
-              {s.cover_url ? (
-                <Image src={s.cover_url} alt="" fill sizes="(min-width:1024px) 28vw, 78vw" className="object-cover" />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src="/brand/icon-gold.svg" alt="" className="absolute right-6 top-1/3 w-1/3 opacity-15" />
-              )}
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="relative flex items-start justify-between">
-                <span className="font-display text-5xl leading-none text-white/25 transition-colors duration-500 group-hover:text-gold">{String(i + 1).padStart(2, "0")}</span>
-                <span className="grid size-11 place-items-center rounded-full border border-white/20 transition-all duration-500 group-hover:rotate-45 group-hover:border-gold group-hover:bg-gold group-hover:text-on-gold">
-                  <ArrowUpRight className="size-5" />
-                </span>
-              </div>
-              <div className="relative">
-                <h3 className="font-heading text-2xl font-bold leading-tight">{tr(s, "title", lang)}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/70 transition-all duration-700 lg:max-h-0 lg:overflow-hidden lg:opacity-0 lg:group-hover:max-h-24 lg:group-hover:opacity-100">
-                  {tr(s, "summary", lang)}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </HorizontalScroll>
+          <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
+            {services.map((s, i) => {
+              const src = s.cover_url ?? pick(i + 3).src;
+              return (
+                <Link key={s.id} href={`/services/${s.slug}`} className="reveal group relative block break-inside-avoid overflow-hidden rounded-[1.75rem] bg-ink" style={{ transitionDelay: `${(i % 3) * 90}ms` }}>
+                  <div className={`relative ${i % 3 === 1 ? "aspect-[4/5]" : "aspect-[5/6]"}`}>
+                    <Image src={src} alt={tr(s, "title", lang)} fill sizes="(min-width:1024px) 31vw, (min-width:640px) 48vw, 100vw" className="object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.07]" />
+                    <span className="absolute left-4 top-4 rounded-full bg-[#fff]/90 px-3 py-1 font-display text-lg leading-none tracking-wider text-[#111] backdrop-blur">{String(i + 1).padStart(2, "0")}</span>
+                  </div>
+                  <div className="absolute inset-x-3 bottom-3 rounded-2xl bg-[#fff]/95 p-4 text-[#111] shadow-xl backdrop-blur transition-transform duration-500 group-hover:-translate-y-1">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="font-heading text-lg font-bold leading-tight">{tr(s, "title", lang)}</h3>
+                      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#111] text-[#d4af37] transition-transform duration-500 group-hover:rotate-45"><ArrowUpRight className="size-5" /></span>
+                    </div>
+                    <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-black/60">{tr(s, "summary", lang)}</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
-      {/* ================= SELECTED WORK (editorial) ================= */}
-      <section id="work" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-28 sm:px-8 md:py-36">
-        <div className="mb-16 flex flex-wrap items-end justify-between gap-6">
+      {/* ================= SELECTED WORK: masonry wall ================= */}
+      <section id="work" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-24 sm:px-8 md:py-32">
+        <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
           <SectionHead eyebrow={t.portfolio_eyebrow} title={t.portfolio_title} />
-          <Magnetic><Link href="/portfolio" className="btn-ghost" data-cursor="View">{t.portfolio_all} <ArrowRight className="size-4" /></Link></Magnetic>
+          <Magnetic><Link href="/portfolio" className="btn-ghost">{t.portfolio_all} <ArrowRight className="size-4" /></Link></Magnetic>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-16">
-          {work.map((p, i) => {
-            const cls = LAYOUT[i].split(" ");
-            const wide = i === 0 || i === 6;
-            return (
-              <Link key={p.id} href={`/portfolio?c=${p.category}`} data-cursor="View"
-                className={`group ${wide ? "col-span-2" : "col-span-1"} ${cls.filter((c) => c.startsWith("lg:")).join(" ")}`}>
-                <div className={`reveal-img img-hover relative overflow-hidden bg-ink-2 ${cls.filter((c) => c.startsWith("aspect")).join(" ")}`}
-                  style={{ transitionDelay: `${(i % 3) * 120}ms` }}>
-                  <Image src={p.image_url} alt={tr(p, "title", lang)} fill sizes={wide ? "(min-width:1024px) 58vw, 100vw" : "(min-width:1024px) 34vw, 50vw"} className="object-cover" />
-                </div>
-                <div className="reveal mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <p className="font-sub text-sm text-white transition-colors group-hover:text-gold sm:text-base">{tr(p, "title", lang)}</p>
-                  <p className="font-sub text-[0.62rem] uppercase tracking-[0.2em] text-white/40">{categoryLabel(p.category, lang)}</p>
-                </div>
-              </Link>
-            );
-          })}
+        <Mosaic items={work.map((p) => ({ src: p.image_url, title: tr(p, "title", lang), label: categoryLabel(p.category, lang), href: `/portfolio?c=${p.category}`, w: p.width, h: p.height }))} />
+      </section>
+
+      {/* ================= RIBBONS ================= */}
+      <section className="overflow-hidden py-20 md:py-28">
+        <div className="mx-auto mb-12 max-w-7xl px-4 text-center sm:px-8">
+          <p className="eyebrow justify-center">{sw ? "Kumbukumbu" : "Memories"}</p>
+          <SplitText as="h2" text={sw ? "Matukio tuliyoyanasa" : "Moments we've captured"} step={0.05}
+            className="mt-4 block font-display text-[clamp(3rem,8vw,7rem)] uppercase leading-[0.9] tracking-wide" />
+        </div>
+        <div className="space-y-4">
+          <PhotoMarquee photos={rotate(photos, 2)} height="h-72 sm:h-96" speed={80} />
+          <PhotoMarquee photos={rotate(photos, 8)} height="h-72 sm:h-96" speed={95} reverse />
         </div>
       </section>
 
-      {/* ================= PROCESS ================= */}
-      <section className="border-y border-line bg-cream text-ink">
-        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-8 md:py-32">
-          <SectionHead eyebrow={t.process_eyebrow} title={t.process_title} dark={false} />
-          <ol className="mt-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+      {/* ================= PROCESS with photos ================= */}
+      <section className="bg-ink-2 py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8">
+          <SectionHead eyebrow={t.process_eyebrow} title={t.process_title} />
+          <ol className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {t.process.map(([h, p], i) => (
-              <li key={h} className="reveal group" style={{ transitionDelay: `${i * 110}ms` }}>
-                <span className="block h-px w-full bg-ink/10"><span className="draw-line block h-px bg-gold" style={{ transitionDelay: `${0.2 + i * 0.15}s` }} /></span>
-                <span className="mt-6 block font-display text-6xl leading-none text-ink/15 transition-colors duration-500 group-hover:text-gold">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-4 font-heading text-lg font-bold">{h}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink/60">{p}</p>
+              <li key={h} className="reveal group overflow-hidden rounded-[1.75rem] border border-line bg-ink" style={{ transitionDelay: `${i * 110}ms` }}>
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  {pick(i + 6) && <Image src={pick(i + 6).src} alt="" fill sizes="(min-width:1024px) 23vw, 50vw" className="object-cover object-[50%_30%] transition-transform duration-1000 group-hover:scale-105" />}
+                  <span className="absolute left-4 top-4 grid size-12 place-items-center rounded-full bg-gold font-display text-2xl text-on-gold shadow-lg">{String(i + 1).padStart(2, "0")}</span>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-heading text-lg font-bold">{h}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-white/60">{p}</p>
+                </div>
               </li>
             ))}
           </ol>
@@ -252,20 +256,28 @@ export default async function Home() {
 
       <SocialSection settings={settings} lang={lang} />
 
-      {/* ================= CTA ================= */}
-      <section className="theme-dark relative isolate overflow-hidden">
-        <Image src={img("graduation")} alt="" fill sizes="100vw" className="parallax -z-20 object-cover object-[50%_40%]" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/55 via-black/15 to-transparent" />
-        <div className="text-shadow-hero mx-auto max-w-7xl px-4 py-32 sm:px-8 md:py-44">
-          <p className="eyebrow eyebrow-line">{t.book_eyebrow}</p>
-          <SplitText as="h2" text={t.cta_title} step={0.06}
-            className="mt-6 block max-w-4xl font-display text-6xl leading-[0.9] tracking-wide sm:text-7xl md:text-[7.5rem]" />
-          <p className="reveal mt-8 max-w-lg text-lg text-white/65">{t.cta_text}</p>
-          <div className="reveal mt-12 flex flex-wrap gap-3">
-            <Magnetic><Link href="/booking" className="btn-gold !px-8 !py-5" data-cursor="Book">{t.nav_book} <ArrowRight className="size-4" /></Link></Magnetic>
-            <Magnetic><a href={waLink(settings.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn-ghost !px-8 !py-5" data-cursor="Chat">
-              <SocialIcon name="whatsapp" className="size-4" /> {t.whatsapp_us}
-            </a></Magnetic>
+      {/* ================= CTA: gold card + photo grid ================= */}
+      <section className="px-4 pb-24 sm:px-8 md:pb-32">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 overflow-hidden rounded-[2.25rem] bg-gold p-8 text-on-gold sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:p-16">
+          <div aria-hidden className="absolute -left-20 -top-20 size-72 rounded-full bg-[#fff]/25 blur-3xl" />
+          <div className="relative">
+            <p className="font-sub text-xs font-semibold uppercase tracking-[0.3em]">{t.book_eyebrow}</p>
+            <SplitText as="h2" text={t.cta_title} step={0.06}
+              className="mt-5 block font-display text-[clamp(3.2rem,7vw,6.5rem)] uppercase leading-[0.88] tracking-wide" />
+            <p className="reveal mt-6 max-w-md text-lg text-black/70">{t.cta_text}</p>
+            <div className="reveal mt-10 flex flex-wrap gap-3">
+              <Magnetic><Link href="/booking" className="inline-flex items-center gap-2 rounded-full bg-[#111] px-8 py-4 font-sub text-sm font-semibold text-[#fff] transition hover:-translate-y-0.5 hover:shadow-xl">{t.nav_book} <ArrowRight className="size-4" /></Link></Magnetic>
+              <Magnetic><a href={waLink(settings.whatsapp)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border-2 border-[#111] px-8 py-4 font-sub text-sm font-semibold transition hover:bg-[#111] hover:text-[#fff]">
+                <SocialIcon name="whatsapp" className="size-4" /> {t.whatsapp_us}
+              </a></Magnetic>
+            </div>
+          </div>
+          <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
+            {[0, 1, 2, 3].map((k) => pick(k + 9) && (
+              <div key={k} className={`reveal-img relative aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl ${k % 2 ? "translate-y-8" : ""}`} style={{ transitionDelay: `${k * 0.1}s` }}>
+                <Image src={pick(k + 9).src} alt="" fill sizes="(min-width:1024px) 20vw, 45vw" className="object-cover" />
+              </div>
+            ))}
           </div>
         </div>
       </section>

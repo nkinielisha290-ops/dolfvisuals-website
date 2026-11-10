@@ -60,7 +60,7 @@ export default function Gallery({ items, allLabel, closeLabel, filter = true, in
         <div className="-mx-4 mb-10 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0">
           {[{ slug: "all", label: allLabel }, ...cats].map((c) => (
             <button key={c.slug} type="button" onClick={() => setCat(c.slug)}
-              className={`shrink-0 border px-4 py-2 font-sub text-xs tracking-wider transition ${cat === c.slug ? "border-gold bg-gold text-on-gold" : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"}`}>
+              className={`shrink-0 rounded-full border px-4 py-2 font-sub text-xs tracking-wider transition ${cat === c.slug ? "border-gold bg-gold text-on-gold" : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"}`}>
               {c.label}
             </button>
           ))}
@@ -71,14 +71,13 @@ export default function Gallery({ items, allLabel, closeLabel, filter = true, in
         {shown.map((it, i) => (
           <button key={it.id} type="button" onClick={() => setIdx(i)} data-cursor={it.videoUrl ? "Play" : "View"}
             style={{ animationDelay: `${Math.min(i, 12) * 60}ms` }}
-            className="animate-fadeup group relative mb-3 block w-full overflow-hidden bg-ink-2 text-left sm:mb-4 break-inside-avoid">
+            className="animate-fadeup group relative mb-3 block w-full overflow-hidden rounded-2xl bg-ink-2 text-left sm:mb-4 break-inside-avoid">
             <Image src={it.src} alt={it.title} width={it.w} height={it.h}
               sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
               className="h-auto w-full transition duration-700 group-hover:scale-[1.04]" />
-            <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
-            <span className="absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-              <span className="eyebrow !text-[0.6rem]">{it.categoryLabel}</span>
-              <span className="mt-1 block font-sub text-sm text-white">{it.title}</span>
+            <span className="absolute inset-x-3 bottom-3 translate-y-2 rounded-full bg-[#fff]/95 px-4 py-2 text-[#111] opacity-0 shadow-lg transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+              <span className="block truncate font-sub text-xs font-semibold">{it.title}</span>
+              <span className="block truncate text-[0.6rem] uppercase tracking-[0.15em] text-black/50">{it.categoryLabel}</span>
             </span>
             {it.videoUrl && (
               <span className="absolute left-1/2 top-1/2 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold/90 text-on-gold">

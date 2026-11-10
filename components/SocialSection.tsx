@@ -22,7 +22,7 @@ export default function SocialSection({ settings: s, lang }: { settings: Setting
   return (
     <section className="mx-auto max-w-7xl px-4 py-24 sm:px-8 md:py-32">
       <SectionHead eyebrow={c.eyebrow} title={socials.length ? c.title : c.titleDirect} text={socials.length ? c.text : c.textDirect} />
-      <div className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-14 grid gap-px overflow-hidden rounded-[1.75rem] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {socials.map(({ key, label, url, color }, i) => (
           <a key={key} href={url} target="_blank" rel="noopener noreferrer"
             className="reveal group relative flex items-center gap-5 overflow-hidden bg-ink p-7 transition-colors duration-500 hover:bg-ink-2"
